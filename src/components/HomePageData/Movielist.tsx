@@ -38,20 +38,20 @@ interface MovieItemProps {
 
 const responsive = {
   superLargeDesktop: {
-    breakpoint: { max: 4000, min: 3000 },
-    items: 8,
-  },
-  desktop: {
-    breakpoint: { max: 3000, min: 1024 },
+    breakpoint: { max: 4000, min: 1536 },
     items: 7,
   },
+  desktop: {
+    breakpoint: { max: 1536, min: 1024 },
+    items: 5,
+  },
   tablet: {
-    breakpoint: { max: 1024, min: 464 },
-    items: 2,
+    breakpoint: { max: 1024, min: 640 },
+    items: 3,
   },
   mobile: {
-    breakpoint: { max: 464, min: 0 },
-    items: 4,
+    breakpoint: { max: 640, min: 0 },
+    items: 2,
   },
 };
 
@@ -138,10 +138,47 @@ const MovieList = () => {
 
   if (loading) {
     return (
-      <div>
-        <Skeleton count={1} height={30} />
-        <Skeleton count={1} height={30} />
-        <Skeleton count={1} height={30} />
+      <div className="p-4">
+        {[...Array(3)].map((_, i) => (
+          <div key={i} className="mb-8">
+            <Skeleton
+              width={200}
+              height={30}
+              className="mb-4"
+              baseColor="#202020"
+              highlightColor="#444"
+            />
+            <div className="flex gap-4 overflow-hidden">
+              {[...Array(12)].map((_, j) => (
+                <div
+                  key={j}
+                  className="flex-shrink-0"
+                  style={{ width: "160px" }}
+                >
+                  <Skeleton
+                    height={240}
+                    className="mb-2"
+                    baseColor="#202020"
+                    highlightColor="#444"
+                  />
+                  <Skeleton
+                    width={120}
+                    height={20}
+                    className="mb-1"
+                    baseColor="#202020"
+                    highlightColor="#444"
+                  />
+                  <Skeleton
+                    width={80}
+                    height={15}
+                    baseColor="#202020"
+                    highlightColor="#444"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
     );
   }

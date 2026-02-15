@@ -7,6 +7,8 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
 import { Movie, Genre } from "@/types";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 const TMDB_API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
 
 export default function AllmoviesTMDB() {
@@ -134,7 +136,7 @@ export default function AllmoviesTMDB() {
   }, [category, page, selectedGenre]);
 
   return (
-    <div className="">
+    <div className="min-h-screen bg-black text-white">
       <br />
       <SearchMovies onSearch={handleSearchResults} />
       <GenreFilter
@@ -142,150 +144,103 @@ export default function AllmoviesTMDB() {
         selectedGenre={selectedGenre}
         handleGenreClick={handleGenreClick}
       />
-      <div className="hidden md:block mt-0 md:mt-8">
-        <p className=" text-orange-300 text-center text-3xl">Special Filter</p>
-        <div className="flex justify-center mt-5 w-3/4 mx-auto gap-4">
-          <button
-            onClick={() => handleCategoryChange("popular")}
-            className={`relative py-3 px-6 text-lg rounded-md cursor-pointer transition-colors duration-300
-            ${
-              category === "popular"
-                ? "bg-blue-500 text-white"
-                : "bg-white text-black"
-            }
-            ${category === "popular" ? "border-none" : "border border-gray-300"}
-          `}
-            style={{
-              borderRadius: "8px",
-            }}
-          >
-            Popular
-          </button>
-          <button
-            onClick={() => handleCategoryChange("top_rated")}
-            className={`relative py-3 px-6 text-lg rounded-md cursor-pointer transition-colors duration-300
-            ${
-              category === "top_rated"
-                ? "bg-blue-500 text-white"
-                : "bg-white text-black"
-            }
-            ${
-              category === "top_rated"
-                ? "border-none"
-                : "border border-gray-300"
-            }
-          `}
-            style={{
-              borderRadius: "8px",
-            }}
-          >
-            Top Rated
-          </button>
-          <button
-            onClick={() => handleCategoryChange("upcoming")}
-            className={`relative py-3 px-6 text-lg rounded-md cursor-pointer transition-colors duration-300
-            ${
-              category === "upcoming"
-                ? "bg-blue-500 text-white"
-                : "bg-white text-black"
-            }
-            ${
-              category === "upcoming" ? "border-none" : "border border-gray-300"
-            }
-          `}
-            style={{
-              borderRadius: "8px",
-            }}
-          >
-            Upcoming
-          </button>
-          <button
-            onClick={() => handleCategoryChange("now_playing")}
-            className={`relative py-3 px-6 text-lg rounded-md cursor-pointer transition-colors duration-300
-            ${
-              category === "now_playing"
-                ? "bg-blue-500 text-white"
-                : "bg-white text-black"
-            }
-            ${
-              category === "now_playing"
-                ? "border-none"
-                : "border border-gray-300"
-            }
-          `}
-            style={{
-              borderRadius: "8px",
-            }}
-          >
-            Now Playing
-          </button>
+
+      {/* Special Filter Section */}
+      <div className="hidden md:block mt-12 mb-8">
+        <div className="flex flex-col items-center space-y-6">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-orange-400 to-red-500 text-transparent bg-clip-text">
+            Explore Movies
+          </h2>
+          <div className="flex justify-center flex-wrap gap-4 p-2 bg-gray-900/50 backdrop-blur-sm rounded-2xl border border-gray-800">
+            {[
+              { id: "popular", label: "Popular" },
+              { id: "top_rated", label: "Top Rated" },
+              { id: "upcoming", label: "Upcoming" },
+              { id: "now_playing", label: "Now Playing" },
+            ].map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => handleCategoryChange(cat.id)}
+                className={`
+                  relative px-6 py-2.5 text-base font-medium rounded-xl transition-all duration-300 ease-out
+                  ${
+                    category === cat.id
+                      ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-[0_0_20px_rgba(37,99,235,0.5)] scale-105"
+                      : "bg-transparent text-gray-400 hover:text-white hover:bg-white/5"
+                  }
+                `}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
-      <br />
-      <div className="container mx-auto md:w-3/4 mt-5">
-        <div className="movie-grid grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+      <div className="container mx-auto px-4 py-8">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
           {movies.map((movie, index) => (
             <div
               key={movie.id}
               ref={index === movies.length - 1 ? lastMovieElementRef : null}
+              className="h-full"
             >
               <Link
                 href={`/movie/${movie.id}`}
-                style={{ textDecoration: "none", color: "white" }}
+                className="group relative block h-[380px] w-full bg-gray-900 rounded-2xl overflow-hidden border border-gray-800 shadow-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:shadow-blue-500/10 hover:border-gray-700 hover:z-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <div className="movie-card m-2">
+                <div className="relative h-full w-full">
                   {movie.poster_path ? (
                     <LazyLoadImage
-                      className="movie-img"
-                      src={`https://image.tmdb.org/t/p/original${movie.poster_path}`}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
                       alt={movie.original_title}
-                      effect="blur"
                     />
                   ) : (
-                    <div
-                      className="fallback-img"
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        backgroundColor: "white",
-                        color: "black",
-                        textAlign: "center",
-                        fontSize: "16px",
-                        fontWeight: "bold",
-                        borderRadius: "4px",
-                      }}
-                    >
-                      No image available
+                    <div className="flex h-full w-full items-center justify-center bg-gray-800 text-gray-400 text-sm font-medium">
+                      No Image
                     </div>
                   )}
-                  <div className="hidden md:block">
-                    <div className="overlay ">
-                      <div className="title">{movie.original_title}</div>
-                      <div className="runtime">
-                        {movie.release_date}
-                        <span className="rating">
-                          <FontAwesomeIcon
-                            className="text-yellow-400 pr-1"
-                            icon={faStar}
-                          />
-                          {movie.vote_average}
-                        </span>
-                      </div>
-                      <div className="description">
-                        {movie.overview.slice(0, 115) + "..."}
-                      </div>
+
+                  {/* Gradient Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5">
+                    <h3 className="text-lg font-bold text-white leading-tight mb-2 drop-shadow-md transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 delay-75">
+                      {movie.original_title}
+                    </h3>
+
+                    <div className="flex items-center space-x-2 text-sm text-gray-300 mb-3 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 delay-100">
+                      <span className="text-yellow-400 flex items-center gap-1 font-semibold">
+                        <FontAwesomeIcon icon={faStar} className="w-3 h-3" />
+                        {movie.vote_average.toFixed(1)}
+                      </span>
+                      <span>•</span>
+                      <span>{movie.release_date?.split("-")[0] || "N/A"}</span>
                     </div>
+
+                    <p className="text-xs text-gray-400 line-clamp-3 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 delay-150">
+                      {movie.overview}
+                    </p>
                   </div>
                 </div>
               </Link>
             </div>
           ))}
+
+          {isLoading &&
+            [...Array(10)].map((_, i) => (
+              <div
+                key={i}
+                className="h-[380px] rounded-2xl overflow-hidden bg-gray-900 border border-gray-800"
+              >
+                <Skeleton
+                  height="100%"
+                  baseColor="#1f2937"
+                  highlightColor="#374151"
+                  className="h-full w-full"
+                />
+              </div>
+            ))}
         </div>
-        {isLoading && <div>Loading...</div>}
       </div>
     </div>
   );

@@ -12,14 +12,8 @@ import {
 } from "@fortawesome/free-brands-svg-icons";
 import { faHeart as faHeartSolid } from "@fortawesome/free-solid-svg-icons";
 import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
-import {
-  doc,
-  getDoc,
-  updateDoc,
-  arrayUnion,
-  arrayRemove,
-} from "firebase/firestore";
-import { auth, db } from "../LoginFunc/Firebase";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 import { TVShow } from "@/types";
 
 const TMDB_API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
@@ -57,16 +51,13 @@ export default function TVDetails() {
       setExternalLinks(linksData);
 
       // Check if the TV show is in the user's Firestore list
-      const user = auth.currentUser;
-      if (user) {
-        const docRef = doc(db, "Users", user.uid);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const list = docSnap.data().myTVList || [];
-          setIsInList(list.includes(id));
-        } else {
-          setIsInList(false);
-        }
+      // Check if the TV show is in the user's local storage list
+      const storedList = localStorage.getItem("myTVList");
+      if (storedList) {
+        const list = JSON.parse(storedList);
+        setIsInList(list.includes(id));
+      } else {
+        setIsInList(false);
       }
     } catch (error) {
       console.error("Error fetching TV data:", error);
@@ -79,45 +70,27 @@ export default function TVDetails() {
 
   // Handle adding/removing TV show from list
   const handleMyListClick = async () => {
-    const user = auth.currentUser;
-    if (user) {
-      const docRef = doc(db, "Users", user.uid);
-      try {
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const currentTVList = docSnap.data().myTVList || [];
-          const newTVList = isInList
-            ? currentTVList.filter((tvId: string) => tvId !== id)
-            : [...currentTVList, id];
-          await updateDoc(docRef, { myTVList: newTVList });
+    // Update local storage
+    const storedList = localStorage.getItem("myTVList");
+    const myTVList = storedList ? JSON.parse(storedList) : [];
 
-          // Update local storage
-          const storedList = localStorage.getItem("myTVList");
-          const myTVList = storedList ? JSON.parse(storedList) : [];
-          if (isInList) {
-            localStorage.setItem(
-              "myTVList",
-              JSON.stringify(myTVList.filter((item: string) => item !== id)),
-            );
-          } else {
-            localStorage.setItem("myTVList", JSON.stringify([...myTVList, id]));
-          }
-
-          // Update the state after modifying the list
-          setIsInList(!isInList);
-        }
-      } catch (error) {
-        console.error("Error updating Firestore:", error);
-      }
+    if (isInList) {
+      localStorage.setItem(
+        "myTVList",
+        JSON.stringify(myTVList.filter((item: string) => item !== id)),
+      );
     } else {
-      alert("Please log in to add to your list.");
+      localStorage.setItem("myTVList", JSON.stringify([...myTVList, id]));
     }
+
+    // Update the state after modifying the list
+    setIsInList(!isInList);
   };
 
   return (
     <>
       <div className="movie">
-        {tvDetails && (
+        {tvDetails ? (
           <>
             <div className="movie__intro">
               <img
@@ -244,6 +217,71 @@ export default function TVDetails() {
               </div>
             </div>
           </>
+        ) : (
+          // Skeleton Loading State
+          <div className="w-full flex flex-col items-center">
+            {/* Backdrop Skeleton */}
+            <div className="w-full h-[50vh] relative">
+              <Skeleton
+                height="100%"
+                baseColor="#202020"
+                highlightColor="#444"
+              />
+            </div>
+
+            {/* Detail Section Skeleton */}
+            <div className="w-[75%] flex flex-col md:flex-row relative -mt-32 gap-8 mb-10">
+              {/* Poster Skeleton */}
+              <div className="flex-shrink-0 w-[300px] h-[450px]">
+                <Skeleton
+                  height="100%"
+                  className="rounded-xl"
+                  baseColor="#202020"
+                  highlightColor="#444"
+                />
+              </div>
+
+              {/* Text Details Skeleton */}
+              <div className="flex-grow flex flex-col text-white pt-10">
+                <Skeleton
+                  width={300}
+                  height={40}
+                  className="mb-2"
+                  baseColor="#202020"
+                  highlightColor="#444"
+                />
+                <Skeleton
+                  width={200}
+                  height={20}
+                  className="mb-4"
+                  baseColor="#202020"
+                  highlightColor="#444"
+                />
+
+                <div className="flex gap-4 mb-4">
+                  <Skeleton
+                    width={80}
+                    height={30}
+                    baseColor="#202020"
+                    highlightColor="#444"
+                  />
+                  <Skeleton
+                    width={100}
+                    height={30}
+                    baseColor="#202020"
+                    highlightColor="#444"
+                  />
+                </div>
+
+                <Skeleton
+                  count={4}
+                  className="mb-2"
+                  baseColor="#202020"
+                  highlightColor="#444"
+                />
+              </div>
+            </div>
+          </div>
         )}
       </div>
       <SingleTVpage />

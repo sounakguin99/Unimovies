@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#111827;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8B5CF6;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="glow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#60A5FA;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#A78BFA;stop-opacity:0.3" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="192" height="192" rx="28.799999999999997" fill="url(#bg)"/>
+  
+  <!-- Glow circle behind play button -->
+  <circle cx="96" cy="96" r="61.44" fill="url(#glow)" opacity="0.5"/>
+  
+  <!-- Outer ring -->
+  <circle cx="96" cy="96" r="67.19999999999999" fill="none" stroke="url(#accent)" stroke-width="3.84" opacity="0.8"/>
+  
+  <!-- Inner gradient circle -->
+  <circle cx="96" cy="96" r="53.760000000000005" fill="url(#accent)" opacity="0.15"/>
+  
+  <!-- Play button triangle -->
+  <polygon points="78.72,67.2 130.56,96 78.72,124.8" fill="url(#accent)"/>
+  
+  <!-- Film strip holes - left side -->
+  <rect x="15.36" y="65.28" width="11.52" height="11.52" rx="2.304" fill="#3B82F6" opacity="0.5"/>
+  <rect x="15.36" y="88.32" width="11.52" height="11.52" rx="2.304" fill="#3B82F6" opacity="0.5"/>
+  <rect x="15.36" y="111.36" width="11.52" height="11.52" rx="2.304" fill="#3B82F6" opacity="0.5"/>
+  
+  <!-- Film strip holes - right side -->
+  <rect x="165.11999999999998" y="65.28" width="11.52" height="11.52" rx="2.304" fill="#8B5CF6" opacity="0.5"/>
+  <rect x="165.11999999999998" y="88.32" width="11.52" height="11.52" rx="2.304" fill="#8B5CF6" opacity="0.5"/>
+  <rect x="165.11999999999998" y="111.36" width="11.52" height="11.52" rx="2.304" fill="#8B5CF6" opacity="0.5"/>
+</svg>

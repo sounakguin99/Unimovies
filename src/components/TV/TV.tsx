@@ -7,6 +7,8 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
 import { TVShow, Genre } from "@/types";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
 
@@ -111,7 +113,7 @@ export default function TV() {
   };
 
   return (
-    <div>
+    <div className="min-h-screen bg-black text-white">
       <br />
       <SearchTVdata Searchdata={handleSearch} />
       <br />
@@ -120,153 +122,98 @@ export default function TV() {
         selectedGenre={selectedGenre}
         handleGenreClick={handleGenreClick}
       />
-      <div className="hidden md:block">
-        <p className="text-orange-300 text-center text-3xl pt-6">
-          Special Filter
-        </p>
-        <div className="flex justify-center mt-5 w-3/4 mx-auto gap-4">
-          <button
-            onClick={() => handleCategoryChange("popular")}
-            className={`relative py-3 px-6 text-lg rounded-md cursor-pointer transition-colors duration-300
-            ${
-              selectedCategory === "popular"
-                ? "bg-blue-500 text-white"
-                : "bg-white text-black"
-            }
-            ${
-              selectedCategory === "popular"
-                ? "border-none"
-                : "border border-gray-300"
-            }
-          `}
-            style={{
-              borderRadius: "8px",
-            }}
-          >
-            Popular
-          </button>
-          <button
-            onClick={() => handleCategoryChange("airing_today")}
-            className={`relative py-3 px-6 text-lg rounded-md cursor-pointer transition-colors duration-300
-            ${
-              selectedCategory === "airing_today"
-                ? "bg-blue-500 text-white"
-                : "bg-white text-black"
-            }
-            ${
-              selectedCategory === "airing_today"
-                ? "border-none"
-                : "border border-gray-300"
-            }
-          `}
-            style={{
-              borderRadius: "8px",
-            }}
-          >
-            Airing Today
-          </button>
-          <button
-            onClick={() => handleCategoryChange("on_the_air")}
-            className={`relative py-3 px-6 text-lg rounded-md cursor-pointer transition-colors duration-300
-            ${
-              selectedCategory === "on_the_air"
-                ? "bg-blue-500 text-white"
-                : "bg-white text-black"
-            }
-            ${
-              selectedCategory === "on_the_air"
-                ? "border-none"
-                : "border border-gray-300"
-            }
-          `}
-            style={{
-              borderRadius: "8px",
-            }}
-          >
-            On TV
-          </button>
-          <button
-            onClick={() => handleCategoryChange("top_rated")}
-            className={`relative py-3 px-6 text-lg rounded-md cursor-pointer transition-colors duration-300
-            ${
-              selectedCategory === "top_rated"
-                ? "bg-blue-500 text-white"
-                : "bg-white text-black"
-            }
-            ${
-              selectedCategory === "top_rated"
-                ? "border-none"
-                : "border border-gray-300"
-            }
-          `}
-            style={{
-              borderRadius: "8px",
-            }}
-          >
-            Top Rated
-          </button>
+
+      {/* Special Filter Section */}
+      <div className="hidden md:block mt-12 mb-8">
+        <div className="flex flex-col items-center space-y-6">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-orange-400 to-red-500 text-transparent bg-clip-text">
+            Discover
+          </h2>
+          <div className="flex justify-center flex-wrap gap-4 p-2 bg-gray-900/50 backdrop-blur-sm rounded-2xl border border-gray-800">
+            {[
+              { id: "popular", label: "Popular" },
+              { id: "airing_today", label: "Airing Today" },
+              { id: "on_the_air", label: "On TV" },
+              { id: "top_rated", label: "Top Rated" },
+            ].map((category) => (
+              <button
+                key={category.id}
+                onClick={() => handleCategoryChange(category.id)}
+                className={`
+                  relative px-6 py-2.5 text-base font-medium rounded-xl transition-all duration-300 ease-out
+                  ${
+                    selectedCategory === category.id
+                      ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-[0_0_20px_rgba(37,99,235,0.5)] scale-105"
+                      : "bg-transparent text-gray-400 hover:text-white hover:bg-white/5"
+                  }
+                `}
+              >
+                {category.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
-      <br />
-      <div className="container mx-auto md:w-3/4 mt-5">
-        <div className="movie-grid grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+      <div className="container mx-auto px-4 py-8">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
           {tv.map((tvShow) => (
             <Link
               href={`/tv/${tvShow.id}`}
-              style={{ textDecoration: "none", color: "white" }}
               key={tvShow.id}
+              className="group relative block h-[380px] w-full bg-gray-900 rounded-2xl overflow-hidden border border-gray-800 shadow-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:shadow-blue-500/10 hover:border-gray-700 hover:z-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <div className="movie-card m-2">
+              <div className="relative h-full w-full">
                 {tvShow.poster_path ? (
                   <LazyLoadImage
-                    className="movie-img"
-                    src={`https://image.tmdb.org/t/p/original${tvShow.poster_path}`}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    src={`https://image.tmdb.org/t/p/w500${tvShow.poster_path}`}
                     alt={tvShow.original_name}
-                    effect="blur"
                   />
                 ) : (
-                  <div
-                    className="fallback-img"
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      display: "flex",
-                      justifyContent: "center",
-                      backgroundColor: "white",
-                      color: "black",
-                      textAlign: "center",
-                      fontSize: "16px",
-                      fontWeight: "bold",
-                      borderRadius: "4px",
-                    }}
-                  >
-                    No image available
+                  <div className="flex h-full w-full items-center justify-center bg-gray-800 text-gray-400 text-sm font-medium">
+                    No Image
                   </div>
                 )}
-                <div className="hidden md:block">
-                  <div className="overlay">
-                    <div className="title">{tvShow.original_name}</div>
-                    <div className="runtime">
-                      {tvShow.first_air_date}
-                      <span className="rating">
-                        <FontAwesomeIcon
-                          className="text-yellow-400 pr-1"
-                          icon={faStar}
-                        />
-                        {tvShow.vote_average}
-                      </span>
-                    </div>
-                    <div className="description">
-                      {tvShow.overview.slice(0, 115) + "..."}
-                    </div>
+
+                {/* Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5">
+                  <h3 className="text-lg font-bold text-white leading-tight mb-2 drop-shadow-md transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 delay-75">
+                    {tvShow.original_name}
+                  </h3>
+
+                  <div className="flex items-center space-x-2 text-sm text-gray-300 mb-3 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 delay-100">
+                    <span className="text-yellow-400 flex items-center gap-1 font-semibold">
+                      <FontAwesomeIcon icon={faStar} className="w-3 h-3" />
+                      {tvShow.vote_average.toFixed(1)}
+                    </span>
+                    <span>•</span>
+                    <span>{tvShow.first_air_date?.split("-")[0] || "N/A"}</span>
                   </div>
+
+                  <p className="text-xs text-gray-400 line-clamp-3 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 delay-150">
+                    {tvShow.overview}
+                  </p>
                 </div>
               </div>
             </Link>
           ))}
+
+          {isLoading &&
+            [...Array(10)].map((_, i) => (
+              <div
+                key={i}
+                className="h-[380px] rounded-2xl overflow-hidden bg-gray-900 border border-gray-800"
+              >
+                <Skeleton
+                  height="100%"
+                  baseColor="#1f2937"
+                  highlightColor="#374151"
+                  className="h-full w-full"
+                />
+              </div>
+            ))}
         </div>
-        {isLoading && <div>Loading...</div>}
       </div>
     </div>
   );

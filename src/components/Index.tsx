@@ -9,6 +9,8 @@ import { faStar } from "@fortawesome/free-solid-svg-icons";
 import Footer from "./Footer";
 import Streamingpartner from "./HomePageData/Streamingdata";
 import { Movie } from "@/types";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const Contactus = lazy(() => import("./HomePageData/Contractus"));
 
@@ -61,61 +63,69 @@ export default function Index() {
   return (
     <div className="index-container">
       <div className="poster">
-        <Carousel
-          showThumbs={false}
-          autoPlay={true}
-          transitionTime={600}
-          interval={8000}
-          infiniteLoop={true}
-          showStatus={false}
-          showIndicators={false}
-          showArrows={!isMobile}
-        >
-          {fetchData.map((movie) => (
-            <div key={movie.id} className="posterImage relative">
-              <img
-                src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
-                alt={movie.original_title}
-                className="w-full h-auto"
-              />
-              <div className="posterImage__overlay absolute bottom-0 left-0 right-0 text-white p-4">
-                <div className="posterImage__title">
-                  <div className="text-xl md:text-7xl ml-0">
-                    {movie.original_title}
+        {fetchData.length === 0 ? (
+          <div className="h-[400px] md:h-[600px] w-full relative">
+            <Skeleton height="100%" baseColor="#202020" highlightColor="#444" />
+          </div>
+        ) : (
+          <Carousel
+            showThumbs={false}
+            autoPlay={true}
+            transitionTime={600}
+            interval={8000}
+            infiniteLoop={true}
+            showStatus={false}
+            showIndicators={false}
+            showArrows={!isMobile}
+          >
+            {fetchData.map((movie) => (
+              <div key={movie.id} className="posterImage relative">
+                <img
+                  src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
+                  alt={movie.original_title}
+                  className="w-full h-auto"
+                />
+                <div className="posterImage__overlay absolute bottom-0 left-0 right-0 text-white p-4">
+                  <div className="posterImage__title">
+                    <div className="text-xl md:text-7xl ml-0">
+                      {movie.original_title}
+                    </div>
                   </div>
-                </div>
-                <div className="posterImage__runtime flex mt-2 justify-between items-center">
-                  <div className="text-sm md:text-3xl text-center md:text-left">
-                    {movie.release_date}
+                  <div className="posterImage__runtime flex mt-2 justify-between items-center">
+                    <div className="text-sm md:text-3xl text-center md:text-left">
+                      {movie.release_date}
+                    </div>
+                    <span className="posterImage__rating text-lg md:text-3xl text-center md:text-left">
+                      <FontAwesomeIcon
+                        className="text-yellow-400"
+                        icon={faStar}
+                      />{" "}
+                      {movie.vote_average}
+                    </span>
                   </div>
-                  <span className="posterImage__rating text-lg md:text-3xl text-center md:text-left">
-                    <FontAwesomeIcon
-                      className="text-yellow-400"
-                      icon={faStar}
-                    />{" "}
-                    {movie.vote_average}
-                  </span>
-                </div>
-                <div className="pb-2">
-                  <Link
-                    className="text-white no-underline"
-                    href={`/movie/${movie.id}`}
-                  >
-                    <button className="relative px-4 py-1 md:px-6 md:py-2 rounded-lg font-semibold text-white bg-neutral-300 border-2 border-transparent overflow-hidden group">
-                      <span className="relative z-10 text-black">Details</span>
-                      <span className="absolute inset-0 border-2 border-transparent bg-white text-black transition-transform transform scale-x-0 group-hover:scale-x-100 origin-left"></span>
-                    </button>
-                  </Link>
-                </div>
-                {!isMobile && (
-                  <div className="posterImage__description mt-2">
-                    <div className="hidden md:block">{movie.overview}</div>
+                  <div className="pb-2">
+                    <Link
+                      className="text-white no-underline"
+                      href={`/movie/${movie.id}`}
+                    >
+                      <button className="relative px-4 py-1 md:px-6 md:py-2 rounded-lg font-semibold text-white bg-neutral-300 border-2 border-transparent overflow-hidden group">
+                        <span className="relative z-10 text-black">
+                          Details
+                        </span>
+                        <span className="absolute inset-0 border-2 border-transparent bg-white text-black transition-transform transform scale-x-0 group-hover:scale-x-100 origin-left"></span>
+                      </button>
+                    </Link>
                   </div>
-                )}
+                  {!isMobile && (
+                    <div className="posterImage__description mt-2">
+                      <div className="hidden md:block">{movie.overview}</div>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
-        </Carousel>
+            ))}
+          </Carousel>
+        )}
         <div className="mx-auto">
           <Movielist />
         </div>
@@ -126,9 +136,11 @@ export default function Index() {
         <div className="text-white text-xl text-center md:text-left md:text-3xl pl-0 md:pl-4 pb-5 pt-8">
           Connect With Us
         </div>
-        <Suspense fallback={<div>Loading Contact Us...</div>}>
-          <Contactus />
-        </Suspense>
+        <div id="contact">
+          <Suspense fallback={<div>Loading Contact Us...</div>}>
+            <Contactus />
+          </Suspense>
+        </div>
         <Footer />
       </div>
     </div>

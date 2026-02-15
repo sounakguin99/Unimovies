@@ -263,6 +263,15 @@ html,
 
 .cards__img {
   height: 300px;
+  width: 100%;
+  object-fit: cover;
+}
+
+@media (max-width: 768px) {
+  .cards__img {
+    height: auto;
+    aspect-ratio: 2/3;
+  }
 }
 
 .cards__overlay {
@@ -414,6 +423,7 @@ h3 {
   margin-top: 10px;
 }
 
+/* Custom Animations */
 @keyframes scroll {
   0% {
     transform: translateX(0%);
@@ -423,33 +433,8 @@ h3 {
   }
 }
 
-.overflow-hidden {
-  overflow: hidden;
-}
-
-.flex {
-  display: flex;
-}
-
-.gap-3 {
-  gap: 0.75rem;
-}
-
 .animate-scroll {
   display: flex;
   width: calc(200% + 3rem);
   animation: scroll 50s linear infinite;
-}
-
-.flex-shrink-0 {
-  flex-shrink: 0;
-  width: 13rem;
-}
-
-.h-36 {
-  height: 9rem;
-}
-
-.w-52 {
-  width: 13rem;
 }

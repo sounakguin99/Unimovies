@@ -3,12 +3,15 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import SearchbarPeople from "./SearchbarPeople";
 import { Person } from "@/types";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const TMDB_API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
 
 export default function People() {
   const [people, setPeople] = useState<Person[]>([]);
   const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleData = (data: Person[]) => {
     setPeople(data);
@@ -16,6 +19,7 @@ export default function People() {
 
   const fetchPeople = async () => {
     try {
+      setIsLoading(true);
       const endpoint = `https://api.themoviedb.org/3/person/popular?api_key=${TMDB_API_KEY}&language=en-US&page=${page}`;
 
       const response = await fetch(endpoint);
@@ -31,6 +35,8 @@ export default function People() {
       }
     } catch (error) {
       console.error("Error fetching people:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -55,29 +61,56 @@ export default function People() {
   }, []);
 
   return (
-    <div className="md:w-3/4 mx-auto">
+    <div className="w-full px-4 md:px-8 py-8 bg-black min-h-screen">
       <SearchbarPeople onSearch={handleData} />
-      <div className="flex flex-wrap justify-center mt-5">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 mt-8">
         {people.map((actor) => (
-          <div key={actor.id} className="m-2 w-1/2 sm:w-1/3 md:w-1/5 lg:w-1/6">
-            <Link href={`/person/${actor.id}`}>
-              <img
-                src={
-                  actor.profile_path
-                    ? `https://image.tmdb.org/t/p/w500${actor.profile_path}`
-                    : "/Images/ok.jpeg"
-                }
-                alt={actor.name}
-                className="w-full h-auto"
-              />
+          <div
+            key={actor.id}
+            className="group relative bg-gray-900 rounded-xl overflow-hidden shadow-lg transition-transform duration-300 hover:scale-105 hover:shadow-2xl hover:bg-gray-800"
+          >
+            <Link href={`/people/${actor.id}`}>
+              <div className="aspect-[2/3] w-full overflow-hidden">
+                <img
+                  src={
+                    actor.profile_path
+                      ? `https://image.tmdb.org/t/p/w500${actor.profile_path}`
+                      : "/Images/ok.jpeg"
+                  }
+                  alt={actor.name}
+                  className="w-full h-full object-cover transition-opacity duration-300 hover:opacity-90"
+                />
+              </div>
             </Link>
-            <p className="text-white text-center pt-2">
-              {actor.original_name.length > 20
-                ? `${actor.original_name.slice(0, 20)}...`
-                : actor.original_name}
-            </p>
+            <div className="p-3 text-center">
+              <p className="text-white font-medium text-sm md:text-base truncate">
+                {actor.original_name}
+              </p>
+            </div>
           </div>
         ))}
+        {isLoading &&
+          [...Array(12)].map((_, i) => (
+            <div
+              key={i}
+              className="bg-gray-900 rounded-xl overflow-hidden shadow-lg"
+            >
+              <Skeleton
+                className="aspect-[2/3] w-full"
+                baseColor="#202020"
+                highlightColor="#444"
+              />
+              <div className="p-3">
+                <Skeleton
+                  height={20}
+                  width="80%"
+                  className="mx-auto"
+                  baseColor="#202020"
+                  highlightColor="#444"
+                />
+              </div>
+            </div>
+          ))}
       </div>
     </div>
   );

@@ -1,228 +1,112 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faBars,
-  faTimes,
-  faUserCircle,
-  faCaretDown,
-  faArrowCircleDown,
-} from "@fortawesome/free-solid-svg-icons";
-import { auth, db } from "./LoginFunc/Firebase";
-import { onAuthStateChanged, signOut, User } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import { faBars, faTimes } from "@fortawesome/free-solid-svg-icons";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
-  const [fullName, setFullName] = useState("");
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
-
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      if (currentUser) {
-        setUser(currentUser);
-        const docRef = doc(db, "Users", currentUser.uid);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          setFullName(data.FullName || "");
-        } else {
-        }
-      } else {
-        setUser(null);
-        setFullName("");
-      }
-    });
-    return () => unsubscribe();
-  }, []);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
-  };
-
-  const handleLogout = async () => {
-    await signOut(auth);
-    setUser(null);
-    setFullName("");
-  };
-
-  const handleMouseEnter = () => {
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
-    setDropdownOpen(true);
-  };
-
-  const handleMouseLeave = () => {
-    const id = setTimeout(() => {
-      setDropdownOpen(false);
-    }, 1000);
-    setTimeoutId(id);
   };
 
   const closeMenu = () => {
     setIsOpen(false);
   };
 
+  const navLinks = [
+    { name: "Movies", path: "/movie" },
+    { name: "People", path: "/people" },
+    { name: "TV", path: "/tv" },
+    { name: "Contact Us", path: "/contact" },
+  ];
+
   return (
-    <nav className="sticky top-0 bg-gray-950 shadow-md z-10 p-4">
-      <div className="flex justify-between items-center">
-        <div className="text-white font-mono flex items-center">
-          <Link href="/" className="text-2xl">
-            UNIMOVIES
-          </Link>
-        </div>
-        <div className="hidden md:flex space-x-8">
-          <Link href="/Allmovies" className="text-white" onClick={closeMenu}>
-            AllMovies
-          </Link>
-          <Link href="/People" className="text-white" onClick={closeMenu}>
-            People
-          </Link>
-          <Link href="/TV" className="text-white" onClick={closeMenu}>
-            TV
-          </Link>
-        </div>
-        <div className="hidden md:flex items-center relative">
-          {user ? (
-            <div
-              className="relative flex items-center cursor-pointer"
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
-              ref={dropdownRef}
+    <>
+      <nav className="sticky top-0 bg-gray-950/90 backdrop-blur-md shadow-lg z-50 border-b border-gray-800">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            {/* Logo */}
+            <Link
+              href="/"
+              className="text-3xl font-bold tracking-tighter bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text hover:opacity-80 transition-opacity"
+            >
+              UNIMOVIES
+            </Link>
+
+            {/* Desktop Navigation - Hidden on mobile, visible on md and up */}
+            <div className="hidden md:flex items-center space-x-8">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.name}
+                  href={link.path}
+                  className="text-gray-300 hover:text-white font-medium transition-colors duration-200 text-lg relative group"
+                >
+                  {link.name}
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-500 transition-all duration-300 group-hover:w-full"></span>
+                </Link>
+              ))}
+            </div>
+
+            {/* Mobile Menu Button - Only visible on mobile */}
+            <button
+              onClick={toggleMenu}
+              className="md:hidden p-2 rounded-md hover:bg-gray-800 transition-colors text-white"
+              aria-label="Toggle menu"
             >
               <FontAwesomeIcon
-                icon={faUserCircle}
-                className="text-white text-2xl mr-2"
+                icon={isOpen ? faTimes : faBars}
+                className="text-2xl"
               />
-              <span className="text-white font-bold mr-2">{fullName}</span>
-              <FontAwesomeIcon
-                icon={faCaretDown}
-                className="text-white text-xl"
-              />
-              {dropdownOpen && (
-                <div className="absolute right-0 mt-2 md:mt-32 w-36 bg-white border rounded shadow-lg z-20">
-                  <Link
-                    href="/myaccount"
-                    className="block text-right px-4 py-2 text-gray-800 hover:bg-gray-200"
-                    onClick={closeMenu}
-                  >
-                    My Account
-                  </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="w-full text-right block px-4 py-2 text-gray-800 hover:bg-gray-200"
-                  >
-                    Logout
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : (
-            <Link href="/Login" onClick={closeMenu}>
-              <button className="p-2 border ml-8 h-10 w-20 font-bold border-sky-500 bg-sky-500 hover:bg-sky-700 text-white">
-                Login
-              </button>
-            </Link>
-          )}
+            </button>
+          </div>
         </div>
-        <div className="md:hidden flex items-center">
-          <button
-            onClick={toggleMenu}
-            className="text-white focus:outline-none"
-          >
-            <FontAwesomeIcon icon={isOpen ? faTimes : faBars} />
-          </button>
-        </div>
-      </div>
+      </nav>
+
+      {/* Mobile Menu Overlay - Only visible on mobile when open */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-20"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
           onClick={closeMenu}
         ></div>
       )}
+
+      {/* Mobile Menu Sidebar - Only visible on mobile */}
       <div
-        className={`fixed top-0 right-0 bg-gray-950 z-30 w-full h-auto transition-transform duration-300 ease-in-out ${
-          isOpen ? "translate-y-0" : "-translate-y-full"
+        className={`fixed top-0 right-0 h-full w-64 bg-gray-900/95 backdrop-blur-xl shadow-2xl z-50 transform transition-transform duration-300 ease-in-out md:hidden ${
+          isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="flex flex-col h-full p-4 space-y-4">
-          <div className="flex justify-between items-center ">
-            <span className="text-white text-2xl font-mono">UNIMOVIES</span>
+        <div className="flex flex-col h-full p-6">
+          {/* Mobile Menu Header */}
+          <div className="flex items-center justify-between mb-8">
+            <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text">
+              MENU
+            </span>
             <button
-              onClick={toggleMenu}
-              className="text-white text-2xl focus:outline-none"
+              onClick={closeMenu}
+              className="text-gray-400 hover:text-white transition-colors p-1"
             >
-              <FontAwesomeIcon icon={faTimes} />
+              <FontAwesomeIcon icon={faTimes} className="text-2xl" />
             </button>
           </div>
-          <div className="border border-white"></div>
-          <div className="flex flex-col flex-grow ">
-            <Link
-              href="/Allmovies"
-              className="text-white py-2"
-              onClick={closeMenu}
-            >
-              AllMovies
-            </Link>
-            <Link
-              href="/People"
-              className="text-white py-2"
-              onClick={closeMenu}
-            >
-              People
-            </Link>
-            <Link href="/TV" className="text-white py-2" onClick={closeMenu}>
-              TV
-            </Link>
-            {user ? (
-              <div className="text-white py-2">
-                <div className="flex items-center mb-4">
-                  <FontAwesomeIcon
-                    icon={faUserCircle}
-                    className="text-white text-2xl mr-2"
-                  />
-                  <span className="text-white font-bold">{fullName}</span>
-                  <FontAwesomeIcon
-                    icon={faArrowCircleDown}
-                    className="text-white text-xl ml-2"
-                  />
-                </div>
-                <div>
-                  <Link
-                    href="/myaccount"
-                    className="block px-4 py-2 hover:bg-gray-600"
-                    onClick={closeMenu}
-                  >
-                    My Account
-                  </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="w-full text-left block px-4 py-2 hover:bg-gray-600"
-                  >
-                    Logout
-                  </button>
-                </div>
-              </div>
-            ) : (
+
+          {/* Mobile Menu Links */}
+          <div className="flex flex-col space-y-4">
+            {navLinks.map((link) => (
               <Link
-                href="/Login"
-                className="block text-white py-2"
+                key={link.name}
+                href={link.path}
                 onClick={closeMenu}
+                className="text-gray-300 hover:text-white hover:bg-gray-800 px-4 py-3 rounded-lg transition-all duration-200 text-lg font-medium"
               >
-                <button className="w-full p-2 font-bold border-sky-500 bg-sky-500 hover:bg-sky-700 text-white">
-                  Login
-                </button>
+                {link.name}
               </Link>
-            )}
+            ))}
           </div>
         </div>
       </div>
-    </nav>
+    </>
   );
 }

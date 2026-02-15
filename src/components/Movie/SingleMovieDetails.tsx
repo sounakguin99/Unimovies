@@ -6,10 +6,12 @@ import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import { useMediaQuery } from "react-responsive";
 
+import FullScreenImage from "@/components/ui/FullScreenImage";
+
 interface CarouselProps {
   items: any[];
   responsive: any;
-  renderItem: (item: any) => React.ReactNode;
+  renderItem: (item: any, index: number) => React.ReactNode;
   autoPlay: boolean;
   showArrows?: boolean;
 }
@@ -31,7 +33,7 @@ const MemoizedCarousel = React.memo(
       draggable={true} // Enable dragging
       swipeable={true} // Enable swiping
     >
-      {items.map(renderItem)}
+      {items.map((item, index) => renderItem(item, index))}
     </Carousel>
   ),
 );
@@ -47,6 +49,11 @@ const SingleMovieDetails = () => {
   const [credits, setCredits] = useState<any[]>([]);
   const [similar, setSimilar] = useState<any[]>([]);
   const [recommendation, setRecommendation] = useState<any[]>([]);
+
+  // State for FullScreenImage
+  const [isImageOpen, setIsImageOpen] = useState(false);
+  const [initialImageIndex, setInitialImageIndex] = useState(0);
+  const [fullScreenImages, setFullScreenImages] = useState<any[]>([]);
 
   const fetchMovieData = useCallback(async () => {
     try {
@@ -158,8 +165,14 @@ const SingleMovieDetails = () => {
     mobile: { breakpoint: { max: 464, min: 0 }, items: 1 },
   };
 
+  const handleImageClick = (images: any[], index: number) => {
+    setFullScreenImages(images);
+    setInitialImageIndex(index);
+    setIsImageOpen(true);
+  };
+
   const renderCredits = (credit: any) => (
-    <Link href={`/person/${credit.id}`} key={credit.id}>
+    <Link href={`/people/${credit.id}`} key={credit.id}>
       <div className="px-5 flex justify-center items-center mt-5 flex-col">
         {credit.profile_path ? (
           <img
@@ -191,12 +204,21 @@ const SingleMovieDetails = () => {
     </div>
   );
 
-  const renderImages = (image: any, baseUrl: string, altText: string) => (
-    <div key={image.file_path} className="p-2">
+  const renderImages = (
+    image: any,
+    baseUrl: string,
+    altText: string,
+    onClick?: () => void,
+  ) => (
+    <div
+      key={image.file_path}
+      className="p-2 cursor-pointer transition-transform hover:scale-[1.02]"
+      onClick={onClick}
+    >
       <img
         src={`${baseUrl}${image.file_path}`}
         alt={altText}
-        className="w-full h-full object-cover rounded-lg"
+        className="w-full h-full object-cover rounded-lg hover:opacity-90 transition-opacity"
         loading="lazy"
       />
     </div>
@@ -266,11 +288,12 @@ const SingleMovieDetails = () => {
           <MemoizedCarousel
             items={backdrops}
             responsive={responsive4}
-            renderItem={(image) =>
+            renderItem={(image, index) =>
               renderImages(
                 image,
                 "https://image.tmdb.org/t/p/original",
                 "backdrop",
+                () => handleImageClick(backdrops, index),
               )
             }
             autoPlay={true}
@@ -287,11 +310,12 @@ const SingleMovieDetails = () => {
           <MemoizedCarousel
             items={posters}
             responsive={responsive2}
-            renderItem={(image) =>
+            renderItem={(image, index) =>
               renderImages(
                 image,
                 "https://image.tmdb.org/t/p/original",
                 "poster",
+                () => handleImageClick(posters, index),
               )
             }
             autoPlay={true}
@@ -341,6 +365,14 @@ const SingleMovieDetails = () => {
           />
         </div>
       )}
+
+      {/* Full Screen Image Modal */}
+      <FullScreenImage
+        images={fullScreenImages}
+        initialIndex={initialImageIndex}
+        isOpen={isImageOpen}
+        onClose={() => setIsImageOpen(false)}
+      />
     </div>
   );
 };

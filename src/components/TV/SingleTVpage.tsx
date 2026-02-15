@@ -3,6 +3,7 @@ import React, { useState, useEffect, Suspense, lazy } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import "react-multi-carousel/lib/styles.css";
+import FullScreenImage from "@/components/ui/FullScreenImage";
 
 // Lazy load the Carousel component
 const Carousel = lazy(() => import("react-multi-carousel"));
@@ -39,10 +40,32 @@ const responsive4 = {
 interface CarouselSectionProps {
   title: string;
   items: any[];
-  renderItem: (item: any) => React.ReactNode;
+  renderItem: (item: any, index: number) => React.ReactNode;
   responsive: any;
   showArrows?: boolean;
 }
+
+interface CustomArrowProps {
+  onClick?: () => void;
+  carouselState?: any;
+  rtl?: boolean;
+}
+
+const CustomRightArrow = ({ onClick }: CustomArrowProps) => {
+  return (
+    <div className="custom-arrow custom-arrow-right" onClick={onClick}>
+      <span>&gt;</span>
+    </div>
+  );
+};
+
+const CustomLeftArrow = ({ onClick }: CustomArrowProps) => {
+  return (
+    <div className="custom-arrow custom-arrow-left" onClick={onClick}>
+      <span>&lt;</span>
+    </div>
+  );
+};
 
 const CarouselSection = ({
   title,
@@ -83,22 +106,10 @@ const CarouselSection = ({
         swipeable={true}
         containerClass="carousel-container"
         itemClass="carousel-item"
-        customRightArrow={
-          showArrows ? (
-            <div className="custom-arrow custom-arrow-right">
-              <span>&gt;</span> {/* Adjust arrow styling here */}
-            </div>
-          ) : null
-        }
-        customLeftArrow={
-          showArrows ? (
-            <div className="custom-arrow custom-arrow-left">
-              <span>&lt;</span> {/* Adjust arrow styling here */}
-            </div>
-          ) : null
-        }
+        customRightArrow={showArrows ? <CustomRightArrow /> : undefined}
+        customLeftArrow={showArrows ? <CustomLeftArrow /> : undefined}
       >
-        {items.map(renderItem)}
+        {items.map((item, index) => renderItem(item, index))}
       </Carousel>
     </div>
   );
@@ -117,6 +128,11 @@ export default function SingleTVpage() {
   const [recommendations, setRecommendations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // State for FullScreenImage
+  const [isImageOpen, setIsImageOpen] = useState(false);
+  const [initialImageIndex, setInitialImageIndex] = useState(0);
+  const [fullScreenImages, setFullScreenImages] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchTVData = async () => {
@@ -186,6 +202,12 @@ export default function SingleTVpage() {
     fetchTVData();
   }, [id]);
 
+  const handleImageClick = (images: any[], index: number) => {
+    setFullScreenImages(images);
+    setInitialImageIndex(index);
+    setIsImageOpen(true);
+  };
+
   if (loading) {
     return <div className="loading">Loading...</div>; // Add a proper loading state
   }
@@ -204,7 +226,7 @@ export default function SingleTVpage() {
             showArrows={true}
             responsive={responsive}
             renderItem={(credit) => (
-              <Link key={credit.id} href={`/person/${credit.id}`}>
+              <Link key={credit.id} href={`/people/${credit.id}`}>
                 <div className="flex justify-center items-center mt-5 flex-col">
                   {credit.profile_path ? (
                     <img
@@ -253,12 +275,16 @@ export default function SingleTVpage() {
             title="Backdrops"
             items={backdrops}
             responsive={responsive4}
-            renderItem={(backdrop) => (
-              <div key={backdrop.file_path} className="p-2">
+            renderItem={(backdrop, index) => (
+              <div
+                key={backdrop.file_path}
+                className="p-2 cursor-pointer transition-transform hover:scale-[1.02]"
+                onClick={() => handleImageClick(backdrops, index)}
+              >
                 <img
                   src={`https://image.tmdb.org/t/p/original${backdrop.file_path}`}
                   alt="Backdrop"
-                  className="w-full h-full object-cover rounded-lg pt-5"
+                  className="w-full h-full object-cover rounded-lg pt-5 hover:opacity-90 transition-opacity"
                 />
               </div>
             )}
@@ -270,22 +296,26 @@ export default function SingleTVpage() {
             title="Posters"
             items={posters}
             responsive={responsive2}
-            renderItem={(poster) => (
-              <Link key={poster.file_path} href={`/poster/${poster.file_path}`}>
-                <div className="p-2">
+            renderItem={(poster, index) => (
+              <div
+                key={poster.file_path}
+                className="p-2 cursor-pointer transition-transform hover:scale-[1.02]"
+                onClick={() => handleImageClick(posters, index)}
+              >
+                <div className="w-full h-full">
                   {poster.file_path ? (
                     <img
                       src={`https://image.tmdb.org/t/p/w500${poster.file_path}`}
                       alt="Poster"
-                      className="w-full h-full object-cover rounded-lg pt-5"
+                      className="w-full h-full object-cover rounded-lg pt-5 hover:opacity-90 transition-opacity"
                     />
                   ) : (
-                    <div className="h-52 w-full flex items-center justify-center rounded-lg bg-gray-200">
+                    <div className="h-52 w-full flex items-center justify-center rounded-lg bg-gray-200 pt-5">
                       <span className="text-gray-500">No Poster Available</span>
                     </div>
                   )}
                 </div>
-              </Link>
+              </div>
             )}
           />
         )}
@@ -344,6 +374,14 @@ export default function SingleTVpage() {
           />
         )}
       </Suspense>
+
+      {/* Full Screen Image Modal */}
+      <FullScreenImage
+        images={fullScreenImages}
+        initialIndex={initialImageIndex}
+        isOpen={isImageOpen}
+        onClose={() => setIsImageOpen(false)}
+      />
     </div>
   );
 }

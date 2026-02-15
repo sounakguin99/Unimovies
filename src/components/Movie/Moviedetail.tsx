@@ -2,15 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import SingleMovieDetails from "./SingleMovieDetails";
-import { auth, db } from "../LoginFunc/Firebase";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
-import {
-  doc,
-  getDoc,
-  updateDoc,
-  arrayUnion,
-  arrayRemove,
-} from "firebase/firestore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import {
@@ -21,6 +13,8 @@ import {
 } from "@fortawesome/free-brands-svg-icons";
 import { faHeart as faHeartSolid } from "@fortawesome/free-solid-svg-icons";
 import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 import { Movie } from "@/types";
 
 const TMDB_API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
@@ -54,15 +48,13 @@ const Moviedetail = () => {
         setexternallinks(extrenaldata);
 
         // Check if the movie is in the user's Firestore list
-        const user = auth.currentUser;
-        if (user) {
-          const docRef = doc(db, "Users", user.uid);
-          const docSnap = await getDoc(docRef);
-          if (docSnap.exists() && docSnap.data().myMovieList.includes(id)) {
-            setIsInList(true);
-          } else {
-            setIsInList(false);
-          }
+        // Check if the movie is in local storage
+        const storedList = localStorage.getItem("myMovieList");
+        if (storedList) {
+          const list = JSON.parse(storedList);
+          setIsInList(list.includes(id));
+        } else {
+          setIsInList(false);
         }
       } catch (error) {
         console.error("Error fetching movie data:", error);
@@ -73,38 +65,20 @@ const Moviedetail = () => {
   }, [id]);
 
   const handleMyListClick = async () => {
-    const user = auth.currentUser;
-    if (user) {
-      const docRef = doc(db, "Users", user.uid);
-      try {
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const newList = isInList ? arrayRemove(id) : arrayUnion(id);
-          await updateDoc(docRef, { myMovieList: newList });
+    // Update local storage
+    const storedList = localStorage.getItem("myMovieList");
+    const myMovieList = storedList ? JSON.parse(storedList) : [];
 
-          // Update local storage
-          const storedList = localStorage.getItem("myMovieList");
-          const myMovieList = storedList ? JSON.parse(storedList) : [];
-          if (isInList) {
-            localStorage.setItem(
-              "myMovieList",
-              JSON.stringify(myMovieList.filter((item: string) => item !== id)),
-            );
-          } else {
-            localStorage.setItem(
-              "myMovieList",
-              JSON.stringify([...myMovieList, id]),
-            );
-          }
-
-          setIsInList(!isInList); // Update the state after modifying the list
-        }
-      } catch (error) {
-        console.error("Error updating Firestore:", error);
-      }
+    if (isInList) {
+      localStorage.setItem(
+        "myMovieList",
+        JSON.stringify(myMovieList.filter((item: string) => item !== id)),
+      );
     } else {
-      alert("Please log in to add to your list.");
+      localStorage.setItem("myMovieList", JSON.stringify([...myMovieList, id]));
     }
+
+    setIsInList(!isInList); // Update the state after modifying the list
   };
 
   const renderFallbackImage = (text: string) => (
@@ -132,7 +106,7 @@ const Moviedetail = () => {
 
   return (
     <div className="movie">
-      {currentMovieDetail && (
+      {currentMovieDetail ? (
         <>
           <div className="movie__intro opacity-75 md:opacity-100">
             {currentMovieDetail.backdrop_path ? (
@@ -267,6 +241,67 @@ const Moviedetail = () => {
             </div>
           </div>
         </>
+      ) : (
+        // Skeleton Loading State
+        <div className="w-full flex flex-col items-center">
+          {/* Backdrop Skeleton */}
+          <div className="w-full h-[50vh] relative">
+            <Skeleton height="100%" baseColor="#202020" highlightColor="#444" />
+          </div>
+
+          {/* Detail Section Skeleton */}
+          <div className="w-[75%] flex flex-col md:flex-row relative -mt-32 gap-8 mb-10">
+            {/* Poster Skeleton */}
+            <div className="flex-shrink-0 w-[300px] h-[450px]">
+              <Skeleton
+                height="100%"
+                className="rounded-xl"
+                baseColor="#202020"
+                highlightColor="#444"
+              />
+            </div>
+
+            {/* Text Details Skeleton */}
+            <div className="flex-grow flex flex-col text-white pt-10">
+              <Skeleton
+                width={300}
+                height={40}
+                className="mb-2"
+                baseColor="#202020"
+                highlightColor="#444"
+              />
+              <Skeleton
+                width={200}
+                height={20}
+                className="mb-4"
+                baseColor="#202020"
+                highlightColor="#444"
+              />
+
+              <div className="flex gap-4 mb-4">
+                <Skeleton
+                  width={80}
+                  height={30}
+                  baseColor="#202020"
+                  highlightColor="#444"
+                />
+                <Skeleton
+                  width={100}
+                  height={30}
+                  baseColor="#202020"
+                  highlightColor="#444"
+                />
+              </div>
+
+              <Skeleton
+                count={4}
+                className="mb-2"
+                baseColor="#202020"
+                highlightColor="#444"
+              />
+            </div>
+          </div>
+        </div>
       )}
       <SingleMovieDetails />
     </div>
