@@ -1,0 +1,59 @@
+import { Genre } from "@/types";
+
+interface FilterMovieProps {
+  genres: Genre[];
+  selectedGenre: number | null;
+  handleGenreClick: (genreId: number) => void;
+}
+
+const FilterMovie = ({
+  genres,
+  selectedGenre,
+  handleGenreClick,
+}: FilterMovieProps) => {
+  if (!genres || genres.length === 0) {
+    return null; // Return null or a loading indicator if genres are not yet available
+  }
+
+  return (
+    <div className="hidden md:block mt-0 md:mt-5">
+      <div className="flex justify-center items-center">
+        {genres.slice(0, 9).map((genre) => (
+          <button
+            key={genre.id}
+            className={`p-1 bg-blue-600 text-white ml-4 ${selectedGenre === genre.id ? "bg-red-500" : ""}`}
+            onClick={() => handleGenreClick(genre.id)}
+          >
+            {genre.name}
+          </button>
+        ))}
+      </div>
+      <br />
+      <div className="flex justify-center items-center">
+        {genres.slice(9, 15).map((genre) => (
+          <button
+            key={genre.id}
+            className={`p-1 bg-blue-600 text-white ml-4 ${selectedGenre === genre.id ? "bg-red-500" : ""}`}
+            onClick={() => handleGenreClick(genre.id)}
+          >
+            {genre.name}
+          </button>
+        ))}
+      </div>
+      <br />
+      <div className="flex justify-center items-center">
+        {genres.slice(15, 19).map((genre) => (
+          <button
+            key={genre.id}
+            className={`p-1 bg-blue-600 text-white ml-4 ${selectedGenre === genre.id ? "bg-red-500" : ""}`}
+            onClick={() => handleGenreClick(genre.id)}
+          >
+            {genre.name}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default FilterMovie;

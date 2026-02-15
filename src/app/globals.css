@@ -1,0 +1,455 @@
+@import "tailwindcss";
+
+:root {
+  --background: #000000;
+  --foreground: #ffffff;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #000000;
+    --foreground: #ffffff;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* Changed from visible to solve potential scrollbar issues, but old css said visible */
+  overflow: visible;
+}
+
+/* Ensure you have enough space and the correct overflow in the parent element */
+html,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+  background-color: var(--background);
+}
+
+.movie-card {
+  display: inline-block;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 0.5rem;
+  cursor: pointer;
+  min-width: 200px;
+  height: 300px;
+  z-index: 0;
+  border: 1px solid rgb(99, 99, 99);
+}
+
+.movie-card:hover {
+  transform: scale(1.12);
+  z-index: 1000;
+  box-shadow:
+    rgba(0, 0, 0, 0.25) 0px 54px 55px,
+    rgba(0, 0, 0, 0.12) 0px -12px 30px,
+    rgba(0, 0, 0, 0.12) 0px 4px 6px,
+    rgba(0, 0, 0, 0.17) 0px 12px 13px,
+    rgba(0, 0, 0, 0.09) 0px -3px 5px;
+}
+
+/* Ensure hover effect is only applied on larger screens */
+@media (max-width: 1024px) {
+  .movie-card:hover {
+    transform: none;
+    z-index: 0;
+    box-shadow: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .movie-card {
+    min-width: 160px;
+    height: 240px;
+  }
+
+  .movie-img {
+    height: 240px;
+  }
+}
+
+@media (max-width: 640px) {
+  .movie-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .movie-card {
+    min-width: 45%; /* Adjust to fit two cards in one row */
+    height: 210px;
+    margin: 0.25rem; /* Reduce space between cards */
+  }
+
+  .movie-img {
+    height: 210px;
+  }
+}
+
+.overlay {
+  position: absolute;
+  padding: 0 1rem 1rem 1rem;
+  bottom: 0px;
+  height: 290px;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  justify-content: flex-end;
+  background-image: linear-gradient(rgb(0, 0, 0, 0), rgb(0, 0, 0, 1));
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.overlay:hover {
+  opacity: 1;
+}
+
+.title {
+  font-weight: 900;
+  font-size: 1rem;
+  margin-bottom: 0.4rem;
+}
+
+.runtime {
+  font-size: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.rating {
+  float: right;
+}
+
+.description {
+  font-style: italic;
+  font-size: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+/* Custom CSS */
+.posterImage {
+  height: 600px;
+}
+
+@media (max-width: 767px) {
+  .posterImage {
+    height: auto;
+  }
+}
+
+.posterImage > img {
+  margin: auto;
+  display: block;
+  width: 100%;
+}
+
+.posterImage__overlay {
+  position: absolute;
+  padding: 5rem;
+  bottom: 0px;
+  height: 70%;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  justify-content: flex-end;
+  align-items: flex-start;
+  background-image: linear-gradient(rgb(0, 0, 0, 0), rgb(0, 0, 0, 1));
+  opacity: 1;
+  transition: opacity 0.3s;
+}
+
+.posterImage__overlay:hover {
+  opacity: 1;
+}
+
+.posterImage__title {
+  font-weight: 900;
+  font-size: 4rem;
+  margin-bottom: 0.4rem;
+  text-align: left;
+}
+
+.posterImage__runtime {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.posterImage__rating {
+  margin-left: 1rem;
+}
+
+.posterImage__description {
+  font-style: italic;
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+  display: flex;
+  text-align: left;
+  width: 50%;
+}
+
+@media (max-width: 640px) {
+  .posterImage__overlay {
+    padding: 1rem; /* Reduce padding for smaller screens */
+    height: auto; /* Adjust height to fit content */
+    bottom: 0px; /* Reset bottom positioning */
+    justify-content: left;
+    align-items: start;
+  }
+
+  .posterImage__title {
+    font-size: 1.5rem; /* Adjust font size for mobile */
+  }
+
+  .posterImage__runtime {
+    text-align: left;
+  }
+}
+
+.Animatedcards {
+  display: inline-block;
+  transition: transform 0.2s;
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 0.5rem;
+  cursor: pointer;
+  min-width: 200px;
+  height: 300px;
+  z-index: 0;
+  border: 1px solid rgb(99, 99, 99);
+}
+.cards {
+  display: inline-block;
+  transition: transform 0.2s;
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 0.5rem;
+  cursor: pointer;
+  min-width: 200px;
+  height: 300px;
+  z-index: 0;
+  border: 1px solid rgb(99, 99, 99);
+}
+
+.cards:hover {
+  transform: scale(1.12);
+  z-index: 1000;
+  box-shadow:
+    rgba(0, 0, 0, 0.25) 0px 54px 55px,
+    rgba(0, 0, 0, 0.12) 0px -12px 30px,
+    rgba(0, 0, 0, 0.12) 0px 4px 6px,
+    rgba(0, 0, 0, 0.17) 0px 12px 13px,
+    rgba(0, 0, 0, 0.09) 0px -3px 5px;
+}
+
+.cards__img {
+  height: 300px;
+}
+
+.cards__overlay {
+  position: absolute;
+  padding: 0 1.5rem 1rem 0.5rem;
+  bottom: 0px;
+  height: 290px;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  justify-content: flex-end;
+  background-image: linear-gradient(rgb(0, 0, 0, 0), rgb(0, 0, 0, 1));
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.cards__overlay:hover {
+  opacity: 1;
+}
+
+.card__title {
+  font-weight: 900;
+  font-size: 1rem;
+  margin-bottom: 0.4rem;
+}
+
+.card__runtime {
+  font-size: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.card__rating {
+  float: right;
+}
+
+.card__description {
+  font-style: italic;
+  font-size: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.movie {
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+}
+
+.movie__intro {
+  width: 100%;
+}
+
+.movie__backdrop {
+  width: 100%;
+  height: 500px;
+  object-fit: cover;
+  object-position: 0 35%;
+}
+
+.movie__detail {
+  width: 75%;
+  display: flex;
+  position: relative;
+  z-index: 1; /* Ensure content stays above backdrop */
+  margin-top: -225px; /* Adjust the vertical position using negative margin */
+  background-color: rgba(0, 0, 0, 0); /* Example overlay background */
+  padding: 20px;
+  border-radius: 10px; /* Optional: rounded corners for overlay */
+}
+
+.movie__detailLeft {
+  margin-right: 30px;
+}
+
+.movie__poster {
+  height: auto;
+  background-size: cover;
+  width: 300px;
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.86) 0px 22px 40px 6px;
+  z-index: 2; /* Ensure poster is above overlay */
+}
+
+.movie__detailRight {
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1; /* Fill remaining space vertically */
+  z-index: 2; /* Ensure content is above overlay */
+}
+
+.movie__detailRightTop > div {
+  text-shadow: 0px 0px 5px #000000;
+  margin-bottom: 0.5rem;
+}
+
+.movie__voteCount {
+  margin-left: 1rem;
+}
+
+.movie__genre {
+  padding: 0.5rem;
+  border: 2px solid white;
+  border-radius: 20px;
+  margin-right: 1rem;
+}
+
+.synopsisText {
+  font-size: 1.5rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  margin-top: 0px;
+}
+
+.login {
+  background-image: url(/Images/ok.jpg);
+  background-repeat: no-repeat;
+  background-size: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.movie-section {
+  margin: 20px 0;
+}
+
+.movie-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+}
+
+.movie-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 10px;
+}
+
+h3 {
+  text-align: center;
+  margin-top: 10px;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.overflow-hidden {
+  overflow: hidden;
+}
+
+.flex {
+  display: flex;
+}
+
+.gap-3 {
+  gap: 0.75rem;
+}
+
+.animate-scroll {
+  display: flex;
+  width: calc(200% + 3rem);
+  animation: scroll 50s linear infinite;
+}
+
+.flex-shrink-0 {
+  flex-shrink: 0;
+  width: 13rem;
+}
+
+.h-36 {
+  height: 9rem;
+}
+
+.w-52 {
+  width: 13rem;
+}

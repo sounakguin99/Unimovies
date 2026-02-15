@@ -1,0 +1,292 @@
+"use client";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import Link from "next/link";
+import GenreFilter from "./FilterMovie";
+import SearchMovies from "./Searchbar";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faStar } from "@fortawesome/free-solid-svg-icons";
+import { Movie, Genre } from "@/types";
+const TMDB_API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
+
+export default function AllmoviesTMDB() {
+  const [category, setCategory] = useState("popular");
+  const [genres, setGenres] = useState<Genre[]>([]);
+  const [selectedGenre, setSelectedGenre] = useState<number | null>(null);
+  const [movies, setMovies] = useState<Movie[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const observer = useRef<IntersectionObserver | null>(null);
+  const today = new Date().toISOString().split("T")[0];
+
+  // Fetch genres from TMDB API
+  const fetchGenres = async () => {
+    try {
+      const response = await fetch(
+        `https://api.themoviedb.org/3/genre/movie/list?api_key=${TMDB_API_KEY}`,
+      );
+      if (!response.ok) {
+        throw new Error(`Failed to fetch genres: ${response.statusText}`);
+      }
+      const data = await response.json();
+      setGenres(data.genres);
+    } catch (error) {
+      console.error("Error fetching genres:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchGenres();
+  }, []);
+
+  // Fetch movies based on category and genre
+  const fetchMovies = async (
+    category: string,
+    page: number,
+    genreId: number | null,
+  ) => {
+    try {
+      setIsLoading(true);
+      const url = genreId
+        ? `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}&sort_by=popularity.desc&page=${page}&with_genres=${genreId}`
+        : `https://api.themoviedb.org/3/movie/${category}?api_key=${TMDB_API_KEY}&page=${page}`;
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch movies: ${response.statusText}`);
+      }
+      const data = await response.json();
+      const filteredMovies = data.results.filter(
+        (movie: Movie) =>
+          category !== "upcoming" || movie.release_date >= today,
+      );
+
+      // Remove duplicates based on poster_path
+      const removeDuplicatesByPath = (array: Movie[]) => {
+        const seen = new Set();
+        return array.filter((item: Movie) => {
+          const path = item.poster_path;
+          if (seen.has(path)) {
+            return false;
+          }
+          seen.add(path);
+          return true;
+        });
+      };
+
+      const uniqueMovies = removeDuplicatesByPath(
+        page === 1 ? filteredMovies : [...movies, ...filteredMovies],
+      );
+
+      setMovies(uniqueMovies);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching movies:", error);
+      setIsLoading(false);
+    }
+  };
+
+  // Handle search results from SearchMovies component
+  const handleSearchResults = (data: Movie[]) => {
+    setMovies(data);
+  };
+
+  // Handle genre button click
+  const handleGenreClick = (genreId: number) => {
+    setSelectedGenre(genreId);
+    setMovies([]);
+    setPage(1);
+    fetchMovies(category, 1, genreId);
+  };
+
+  // Handle category change
+  const handleCategoryChange = (newCategory: string) => {
+    setCategory(newCategory);
+    setMovies([]);
+    setPage(1);
+    fetchMovies(newCategory, 1, selectedGenre);
+  };
+
+  // Load more movies when scrolled to the end
+  const loadMoreMovies = useCallback(() => {
+    if (!isLoading) {
+      setPage((prevPage) => prevPage + 1);
+    }
+  }, [isLoading]);
+
+  // Observer for last movie element
+  const lastMovieElementRef = useCallback(
+    (node: HTMLElement | null) => {
+      if (isLoading) return;
+      if (observer.current) observer.current.disconnect();
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          loadMoreMovies();
+        }
+      });
+      if (node) observer.current.observe(node);
+    },
+    [isLoading, loadMoreMovies],
+  );
+
+  // Initial fetch of movies
+  useEffect(() => {
+    fetchMovies(category, page, selectedGenre);
+  }, [category, page, selectedGenre]);
+
+  return (
+    <div className="">
+      <br />
+      <SearchMovies onSearch={handleSearchResults} />
+      <GenreFilter
+        genres={genres}
+        selectedGenre={selectedGenre}
+        handleGenreClick={handleGenreClick}
+      />
+      <div className="hidden md:block mt-0 md:mt-8">
+        <p className=" text-orange-300 text-center text-3xl">Special Filter</p>
+        <div className="flex justify-center mt-5 w-3/4 mx-auto gap-4">
+          <button
+            onClick={() => handleCategoryChange("popular")}
+            className={`relative py-3 px-6 text-lg rounded-md cursor-pointer transition-colors duration-300
+            ${
+              category === "popular"
+                ? "bg-blue-500 text-white"
+                : "bg-white text-black"
+            }
+            ${category === "popular" ? "border-none" : "border border-gray-300"}
+          `}
+            style={{
+              borderRadius: "8px",
+            }}
+          >
+            Popular
+          </button>
+          <button
+            onClick={() => handleCategoryChange("top_rated")}
+            className={`relative py-3 px-6 text-lg rounded-md cursor-pointer transition-colors duration-300
+            ${
+              category === "top_rated"
+                ? "bg-blue-500 text-white"
+                : "bg-white text-black"
+            }
+            ${
+              category === "top_rated"
+                ? "border-none"
+                : "border border-gray-300"
+            }
+          `}
+            style={{
+              borderRadius: "8px",
+            }}
+          >
+            Top Rated
+          </button>
+          <button
+            onClick={() => handleCategoryChange("upcoming")}
+            className={`relative py-3 px-6 text-lg rounded-md cursor-pointer transition-colors duration-300
+            ${
+              category === "upcoming"
+                ? "bg-blue-500 text-white"
+                : "bg-white text-black"
+            }
+            ${
+              category === "upcoming" ? "border-none" : "border border-gray-300"
+            }
+          `}
+            style={{
+              borderRadius: "8px",
+            }}
+          >
+            Upcoming
+          </button>
+          <button
+            onClick={() => handleCategoryChange("now_playing")}
+            className={`relative py-3 px-6 text-lg rounded-md cursor-pointer transition-colors duration-300
+            ${
+              category === "now_playing"
+                ? "bg-blue-500 text-white"
+                : "bg-white text-black"
+            }
+            ${
+              category === "now_playing"
+                ? "border-none"
+                : "border border-gray-300"
+            }
+          `}
+            style={{
+              borderRadius: "8px",
+            }}
+          >
+            Now Playing
+          </button>
+        </div>
+      </div>
+
+      <br />
+      <div className="container mx-auto md:w-3/4 mt-5">
+        <div className="movie-grid grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+          {movies.map((movie, index) => (
+            <div
+              key={movie.id}
+              ref={index === movies.length - 1 ? lastMovieElementRef : null}
+            >
+              <Link
+                href={`/movie/${movie.id}`}
+                style={{ textDecoration: "none", color: "white" }}
+              >
+                <div className="movie-card m-2">
+                  {movie.poster_path ? (
+                    <LazyLoadImage
+                      className="movie-img"
+                      src={`https://image.tmdb.org/t/p/original${movie.poster_path}`}
+                      alt={movie.original_title}
+                      effect="blur"
+                    />
+                  ) : (
+                    <div
+                      className="fallback-img"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        backgroundColor: "white",
+                        color: "black",
+                        textAlign: "center",
+                        fontSize: "16px",
+                        fontWeight: "bold",
+                        borderRadius: "4px",
+                      }}
+                    >
+                      No image available
+                    </div>
+                  )}
+                  <div className="hidden md:block">
+                    <div className="overlay ">
+                      <div className="title">{movie.original_title}</div>
+                      <div className="runtime">
+                        {movie.release_date}
+                        <span className="rating">
+                          <FontAwesomeIcon
+                            className="text-yellow-400 pr-1"
+                            icon={faStar}
+                          />
+                          {movie.vote_average}
+                        </span>
+                      </div>
+                      <div className="description">
+                        {movie.overview.slice(0, 115) + "..."}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            </div>
+          ))}
+        </div>
+        {isLoading && <div>Loading...</div>}
+      </div>
+    </div>
+  );
+}
