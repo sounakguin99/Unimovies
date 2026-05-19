@@ -37,9 +37,9 @@ const securityHeaders = [
       "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.google.com https://www.gstatic.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
-      "img-src 'self' data: blob: https://image.tmdb.org https://www.google.com https://www.gstatic.com",
+      "img-src 'self' data: blob: https://image.tmdb.org https://www.google.com https://www.gstatic.com https://img.youtube.com",
       "connect-src 'self' https://api.themoviedb.org https://www.google.com https://vitals.vercel-insights.com",
-      "frame-src https://www.google.com",
+      "frame-src https://www.google.com https://www.youtube.com",
       "media-src 'self'",
       "object-src 'none'",
       "base-uri 'self'",
@@ -50,10 +50,6 @@ const securityHeaders = [
   },
   {
     key: "Cross-Origin-Opener-Policy",
-    value: "same-origin",
-  },
-  {
-    key: "Cross-Origin-Resource-Policy",
     value: "same-origin",
   },
 ];

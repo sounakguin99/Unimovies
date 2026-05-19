@@ -15,6 +15,7 @@ export default function AwardsClient() {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const observer = useRef<IntersectionObserver | null>(null);
 
   const awardTabs = [
@@ -76,6 +77,7 @@ export default function AwardsClient() {
         throw new Error(`Failed to fetch award movies: ${response.statusText}`);
       }
       const data = await response.json();
+      setTotalPages(data.total_pages || 1);
 
       // Remove duplicates based on poster_path
       const removeDuplicatesByPath = (array: Movie[]) => {
@@ -103,20 +105,23 @@ export default function AwardsClient() {
   const handleTabChange = (tabId: string) => {
     setActiveTab(tabId);
     setPage(1);
+    setTotalPages(1);
     setIsLoading(true);
   };
 
   // Pagination / Infinite Scroll
   const loadMoreMovies = useCallback(() => {
-    if (!isLoading) {
+    if (!isLoading && page < totalPages) {
       setPage((prevPage) => prevPage + 1);
     }
-  }, [isLoading]);
+  }, [isLoading, page, totalPages]);
 
   const lastMovieElementRef = useCallback(
     (node: HTMLElement | null) => {
       if (isLoading) return;
       if (observer.current) observer.current.disconnect();
+      if (page >= totalPages) return;
+
       observer.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting) {
           loadMoreMovies();
@@ -124,7 +129,7 @@ export default function AwardsClient() {
       });
       if (node) observer.current.observe(node);
     },
-    [isLoading, loadMoreMovies],
+    [isLoading, loadMoreMovies, page, totalPages],
   );
 
   useEffect(() => {

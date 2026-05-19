@@ -35,6 +35,7 @@ const fetchTVGenres = async (
 const fetchTVShows = async (
   setTV: React.Dispatch<React.SetStateAction<TVShow[]>>,
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
+  setTotalPages: React.Dispatch<React.SetStateAction<number>>,
   category: string,
   genreId: number | null,
   page: number,
@@ -65,6 +66,7 @@ const fetchTVShows = async (
       throw new Error(`Failed to fetch TV shows: ${response.statusText}`);
     }
     const data = await response.json();
+    setTotalPages(data.total_pages || 1);
     setTV((prevTV) =>
       page === 1 ? data.results : [...prevTV, ...data.results],
     );
@@ -78,54 +80,60 @@ const fetchTVShows = async (
 export default function TV() {
   const [tv, setTV] = useState<TVShow[]>([]);
   const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [tvGenres, setTVGenres] = useState<Genre[]>([]);
   const [selectedGenre, setSelectedGenre] = useState<number | null>(null);
   const [selectedCategory, setSelectedCategory] = useState("popular");
   const [isLoading, setIsLoading] = useState(false);
-  const initialFetch = useRef(true);
+  const observer = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
     fetchTVGenres(setTVGenres);
   }, []);
 
   useEffect(() => {
-    if (initialFetch.current) {
-      fetchTVShows(setTV, setIsLoading, selectedCategory, selectedGenre, page);
-      initialFetch.current = false;
-    } else {
-      fetchTVShows(setTV, setIsLoading, selectedCategory, selectedGenre, page);
-    }
+    fetchTVShows(setTV, setIsLoading, setTotalPages, selectedCategory, selectedGenre, page);
   }, [page, selectedGenre, selectedCategory]);
 
-  const handleScroll = () => {
-    if (
-      window.innerHeight + document.documentElement.scrollTop + 1 >=
-      document.documentElement.scrollHeight
-    ) {
+  const loadMoreTV = useCallback(() => {
+    if (!isLoading && page < totalPages) {
       setPage((prevPage) => prevPage + 1);
     }
-  };
+  }, [isLoading, page, totalPages]);
 
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
+  const lastTVElementRef = useCallback(
+    (node: HTMLElement | null) => {
+      if (isLoading) return;
+      if (observer.current) observer.current.disconnect();
+      if (page >= totalPages) return;
+
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          loadMoreTV();
+        }
+      });
+      if (node) observer.current.observe(node);
+    },
+    [isLoading, loadMoreTV, page, totalPages],
+  );
 
   const handleSearch = (data: TVShow[]) => {
     setTV(data);
+    setPage(1);
+    setTotalPages(1);
   };
 
   const handleGenreClick = (genreId: number) => {
     setSelectedGenre(genreId);
     setPage(1);
+    setTotalPages(1);
     setIsLoading(true);
   };
 
   const handleCategoryChange = (newCategory: string) => {
     setSelectedCategory(newCategory);
     setPage(1);
+    setTotalPages(1);
     setIsLoading(true);
   };
 
@@ -193,6 +201,7 @@ export default function TV() {
             {tv.map((tvShow, index) => (
               <div
                 key={`${tvShow.id}-${index}`}
+                ref={index === tv.length - 1 ? lastTVElementRef : undefined}
                 className="group relative rounded-2xl overflow-hidden shadow-2xl bg-gray-900 border border-white/5 cursor-pointer aspect-[2/3] transition-all duration-500 hover:shadow-[0_0_40px_rgba(59,130,246,0.3)] hover:-translate-y-2"
               >
                 <Link href={`/tv/${tvShow.id}`}>

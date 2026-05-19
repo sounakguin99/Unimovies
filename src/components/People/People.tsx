@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import SearchbarPeople from "./SearchbarPeople";
@@ -12,54 +12,63 @@ const TMDB_API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
 export default function People() {
   const [people, setPeople] = useState<Person[]>([]);
   const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const observer = useRef<IntersectionObserver | null>(null);
 
   const handleData = (data: Person[]) => {
     setPeople(data);
+    setPage(1);
+    setTotalPages(1);
   };
 
-  const fetchPeople = async () => {
+  const fetchPeople = useCallback(async (currentPage: number) => {
     try {
       setIsLoading(true);
-      const endpoint = `https://api.themoviedb.org/3/person/popular?api_key=${TMDB_API_KEY}&language=en-US&page=${page}`;
+      const endpoint = `https://api.themoviedb.org/3/person/popular?api_key=${TMDB_API_KEY}&language=en-US&page=${currentPage}`;
 
       const response = await fetch(endpoint);
       if (!response.ok) {
         throw new Error(`Failed to fetch people: ${response.statusText}`);
       }
       const data = await response.json();
+      setTotalPages(data.total_pages || 1);
 
-      if (page === 1) {
-        setPeople(data.results);
-      } else {
-        setPeople((prevPeople) => [...prevPeople, ...data.results]);
-      }
+      setPeople((prevPeople) => {
+        return currentPage === 1 ? data.results : [...prevPeople, ...data.results];
+      });
     } catch (error) {
       console.error("Error fetching people:", error);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    fetchPeople();
-  }, [page]);
+    fetchPeople(page);
+  }, [page, fetchPeople]);
 
-  const handleScroll = () => {
-    if (
-      window.innerHeight + document.documentElement.scrollTop + 1 >=
-      document.documentElement.scrollHeight
-    ) {
+  const loadMorePeople = useCallback(() => {
+    if (!isLoading && page < totalPages) {
       setPage((prevPage) => prevPage + 1);
     }
-  };
+  }, [isLoading, page, totalPages]);
 
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
+  const lastPersonElementRef = useCallback(
+    (node: HTMLElement | null) => {
+      if (isLoading) return;
+      if (observer.current) observer.current.disconnect();
+      if (page >= totalPages) return;
+
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          loadMorePeople();
+        }
+      });
+      if (node) observer.current.observe(node);
+    },
+    [isLoading, loadMorePeople, page, totalPages],
+  );
 
   return (
     <div className="w-full bg-black min-h-screen pb-16">
@@ -89,6 +98,7 @@ export default function People() {
             {people.map((actor, index) => (
               <div
                 key={`${actor.id}-${index}`}
+                ref={index === people.length - 1 ? lastPersonElementRef : undefined}
                 className="group relative rounded-2xl overflow-hidden shadow-2xl bg-gray-900 border border-white/5 cursor-pointer aspect-[2/3] transition-all duration-500 hover:shadow-[0_0_40px_rgba(59,130,246,0.3)] hover:-translate-y-2"
               >
                 <Link href={`/people/${actor.id}`}>

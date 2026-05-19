@@ -19,6 +19,7 @@ export default function AllmoviesTMDB() {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const observer = useRef<IntersectionObserver | null>(null);
   const today = new Date().toISOString().split("T")[0];
 
@@ -74,6 +75,7 @@ export default function AllmoviesTMDB() {
         throw new Error(`Failed to fetch movies: ${response.statusText}`);
       }
       const data = await response.json();
+      setTotalPages(data.total_pages || 1);
       
       const filteredMovies = genreId ? data.results : data.results.filter(
         (movie: Movie) => category !== "upcoming" || movie.release_date >= today,
@@ -113,6 +115,7 @@ export default function AllmoviesTMDB() {
   const handleGenreClick = (genreId: number) => {
     setSelectedGenre(genreId);
     setPage(1);
+    setTotalPages(1);
     setIsLoading(true);
   };
 
@@ -120,21 +123,24 @@ export default function AllmoviesTMDB() {
   const handleCategoryChange = (newCategory: string) => {
     setCategory(newCategory);
     setPage(1);
+    setTotalPages(1);
     setIsLoading(true);
   };
 
   // Load more movies when scrolled to the end
   const loadMoreMovies = useCallback(() => {
-    if (!isLoading) {
+    if (!isLoading && page < totalPages) {
       setPage((prevPage) => prevPage + 1);
     }
-  }, [isLoading]);
+  }, [isLoading, page, totalPages]);
 
   // Observer for last movie element
   const lastMovieElementRef = useCallback(
     (node: HTMLElement | null) => {
       if (isLoading) return;
       if (observer.current) observer.current.disconnect();
+      if (page >= totalPages) return;
+
       observer.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting) {
           loadMoreMovies();
@@ -142,7 +148,7 @@ export default function AllmoviesTMDB() {
       });
       if (node) observer.current.observe(node);
     },
-    [isLoading, loadMoreMovies],
+    [isLoading, loadMoreMovies, page, totalPages],
   );
 
   // Initial fetch of movies
