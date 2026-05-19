@@ -38,18 +38,13 @@ export default function SearchbarPeople({ onSearch }: SearchbarPeopleProps) {
   };
 
   return (
-    <div className="p-4">
-      <form className="max-w-md mx-auto mt-6" onSubmit={handleSubmit}>
-        <label
-          htmlFor="default-search"
-          className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
-        >
-          Search
-        </label>
-        <div className="relative">
-          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+    <div className="w-full max-w-2xl mx-auto px-4 relative z-20 -mt-20 mb-12">
+      <form onSubmit={handleSubmit} className="relative group">
+        <div className="absolute inset-0 bg-blue-500/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        <div className="relative flex items-center bg-gray-900/80 backdrop-blur-xl border border-white/10 rounded-full p-2 shadow-2xl transition-all duration-300 focus-within:border-blue-500/50 focus-within:bg-gray-900 focus-within:shadow-[0_0_30px_rgba(59,130,246,0.3)]">
+          <div className="pl-4 pr-2 text-gray-400">
             <svg
-              className="w-4 h-4 text-gray-500 dark:text-gray-400"
+              className="w-5 h-5"
               aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -66,16 +61,16 @@ export default function SearchbarPeople({ onSearch }: SearchbarPeopleProps) {
           </div>
           <input
             type="search"
-            id="default-search"
-            className="block w-full p-4 pl-10 pr-28 sm:pr-32 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            placeholder="Search by name..."
+            className="w-full bg-transparent border-none outline-none text-white placeholder-gray-500 px-2 py-2 text-base md:text-lg focus:ring-0"
+            placeholder="Search for actors, directors, and more..."
             value={query}
             onChange={handleChange}
             required
           />
           <button
             type="submit"
-            className="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            disabled={isLoading}
+            className="flex-shrink-0 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-semibold rounded-full px-6 py-2.5 transition-all duration-300 transform active:scale-95 disabled:opacity-70 shadow-lg"
           >
             {isLoading ? "Searching..." : "Search"}
           </button>

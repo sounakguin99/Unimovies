@@ -101,7 +101,6 @@ export function generateSEOMetadata({
       site: "@unimovies",
     },
     other: {
-      "google-site-verification": "your-google-verification-code-here",
       ...additionalMeta,
     },
   };
@@ -220,30 +219,44 @@ export function generateWebsiteJsonLd() {
       url: BASE_URL,
       description:
         "Discover movies, TV shows, and celebrities. Your ultimate entertainment companion with trending content, reviews, and more.",
-      potentialAction: {
-        "@type": "SearchAction",
-        target: {
-          "@type": "EntryPoint",
-          urlTemplate: `${BASE_URL}/movie?search={search_term_string}`,
+      inLanguage: "en-US",
+      potentialAction: [
+        {
+          "@type": "SearchAction",
+          target: {
+            "@type": "EntryPoint",
+            urlTemplate: `${BASE_URL}/movie?search={search_term_string}`,
+          },
+          "query-input": "required name=search_term_string",
         },
-        "query-input": "required name=search_term_string",
-      },
+      ],
     },
     {
       "@context": "https://schema.org",
       "@type": "Organization",
       name: SITE_NAME,
       url: BASE_URL,
-      logo: `${BASE_URL}/icons/icon-512.png`,
+      logo: {
+        "@type": "ImageObject",
+        url: `${BASE_URL}/icons/icon-512.png`,
+        width: 512,
+        height: 512,
+      },
       sameAs: [
-        "https://twitter.com/unimovies",
-        "https://facebook.com/unimovies",
-        "https://instagram.com/unimovies",
+        "https://www.linkedin.com/in/sounak-guin-6a7a84209/",
+        "https://github.com/sounakguin",
+        "https://www.instagram.com/sounak__guin/",
       ],
       contactPoint: {
         "@type": "ContactPoint",
         contactType: "customer service",
-        email: "support@unimovies.com",
+        email: "sounak.guin@gmail.com",
+        availableLanguage: ["English"],
+      },
+      founder: {
+        "@type": "Person",
+        name: "Sounak Guin",
+        url: "https://www.sounakguin.in/",
       },
     },
   ];
@@ -263,6 +276,59 @@ export function generateBreadcrumbJsonLd(
       position: index + 1,
       name: item.name,
       item: `${BASE_URL}${item.path}`,
+    })),
+  };
+}
+
+/**
+ * Generate CollectionPage JSON-LD for listing/collection pages.
+ * Helps Google understand that pages like /movie, /tv, /awards are collection pages.
+ */
+export function generateCollectionJsonLd({
+  name,
+  description,
+  path,
+}: {
+  name: string;
+  description: string;
+  path: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name,
+    description,
+    url: `${BASE_URL}${path}`,
+    isPartOf: {
+      "@type": "WebSite",
+      name: SITE_NAME,
+      url: BASE_URL,
+    },
+    provider: {
+      "@type": "Organization",
+      name: SITE_NAME,
+      url: BASE_URL,
+    },
+  };
+}
+
+/**
+ * Generate FAQ JSON-LD for pages with FAQ content.
+ * Helps get the FAQ rich snippet in Google search results.
+ */
+export function generateFAQJsonLd(
+  faqs: { question: string; answer: string }[]
+) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.answer,
+      },
     })),
   };
 }

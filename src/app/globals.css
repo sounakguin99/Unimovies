@@ -418,10 +418,7 @@ html,
   margin: 10px;
 }
 
-h3 {
-  text-align: center;
-  margin-top: 10px;
-}
+
 
 /* Custom Animations */
 @keyframes scroll {

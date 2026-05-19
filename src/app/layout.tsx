@@ -3,10 +3,10 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "../components/Navbar";
 import { Providers } from "../components/Providers";
-import InstallPWA from "../components/InstallPWA";
 import OfflineBanner from "../components/OfflineBanner";
 import PWAUpdateNotification from "../components/PWAUpdateNotification";
 import ServiceWorkerRegistrar from "../components/ServiceWorkerRegistrar";
+import WhatsAppButton from "../components/WhatsAppButton";
 import { generateWebsiteJsonLd } from "@/lib/seo";
 
 const geistSans = Geist({
@@ -111,10 +111,10 @@ export const metadata: Metadata = {
     "mobile-web-app-capable": "yes",
     "msapplication-TileColor": "#111827",
     "msapplication-tap-highlight": "no",
-    "google-site-verification": "your-google-verification-code-here",
   },
   icons: {
     icon: [
+      { url: "/logo.svg", type: "image/svg+xml" },
       { url: "/icons/favicon.png", sizes: "32x32", type: "image/png" },
       { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
       { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
@@ -168,7 +168,7 @@ export default function RootLayout({
         <Providers>
           <Navbar />
           {children}
-          <InstallPWA />
+          <WhatsAppButton />
           <OfflineBanner />
           <PWAUpdateNotification />
           <ServiceWorkerRegistrar />

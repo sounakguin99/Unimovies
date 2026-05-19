@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faTimes,
@@ -102,10 +103,11 @@ export default function FullScreenImage({
             <div className="w-10 h-10 border-4 border-white/20 border-t-blue-500 rounded-full animate-spin"></div>
           </div>
         )}
-        <img
+        <Image
+          fill
           src={getImageUrl(images[currentIndex])}
           alt={`Gallery image ${currentIndex + 1}`}
-          className={`max-w-full max-h-[90vh] object-contain transition-opacity duration-300 ${isLoading ? "opacity-0" : "opacity-100"} shadow-2xl rounded-lg`}
+          className={`object-contain transition-opacity duration-300 ${isLoading ? "opacity-0" : "opacity-100"} shadow-2xl rounded-lg p-4`}
           onLoad={() => setIsLoading(false)}
         />
 

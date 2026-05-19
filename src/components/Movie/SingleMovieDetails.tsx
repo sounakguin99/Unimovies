@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import Carousel from "react-multi-carousel";
@@ -8,17 +9,78 @@ import { useMediaQuery } from "react-responsive";
 
 import FullScreenImage from "@/components/ui/FullScreenImage";
 
+const CustomHeaderWithArrows = ({ next, previous, title, showArrows }: any) => (
+  <div className="flex items-center justify-between mb-4 mt-12 px-2">
+    <div className="flex items-center gap-3">
+      <div className="w-1.5 h-7 bg-blue-500 rounded-full inline-block"></div>
+      <h2 className="text-2xl md:text-3xl font-black tracking-tight text-white">
+        {title}
+      </h2>
+    </div>
+    {showArrows && (
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => previous?.()}
+          className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gray-900/80 backdrop-blur-md border border-white/10 hover:border-blue-500 hover:bg-gray-800 text-white flex items-center justify-center transition-all shadow-lg active:scale-95 group"
+          aria-label="Previous"
+        >
+          <svg
+            className="w-5 h-5 text-gray-300 group-hover:text-white transition-colors"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2.5"
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+        </button>
+        <button
+          onClick={() => next?.()}
+          className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gray-900/80 backdrop-blur-md border border-white/10 hover:border-blue-500 hover:bg-gray-800 text-white flex items-center justify-center transition-all shadow-lg active:scale-95 group"
+          aria-label="Next"
+        >
+          <svg
+            className="w-5 h-5 text-gray-300 group-hover:text-white transition-colors"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2.5"
+              d="M9 5l7 7-7 7"
+            />
+          </svg>
+        </button>
+      </div>
+    )}
+  </div>
+);
+
 interface CarouselProps {
   items: any[];
   responsive: any;
   renderItem: (item: any, index: number) => React.ReactNode;
   autoPlay: boolean;
   showArrows?: boolean;
+  title: string;
 }
 
 // Memoized Carousel component to prevent unnecessary re-renders
 const MemoizedCarousel = React.memo(
-  ({ items, responsive, renderItem, autoPlay, showArrows }: CarouselProps) => (
+  ({
+    items,
+    responsive,
+    renderItem,
+    autoPlay,
+    showArrows,
+    title,
+  }: CarouselProps) => (
     <Carousel
       responsive={responsive}
       infinite={true}
@@ -26,12 +88,16 @@ const MemoizedCarousel = React.memo(
       autoPlaySpeed={5000}
       keyBoardControl={true}
       transitionDuration={1000}
-      arrows={showArrows}
+      arrows={false}
       showDots={false}
       containerClass="carousel-container"
       itemClass="carousel-item"
       draggable={true} // Enable dragging
       swipeable={true} // Enable swiping
+      renderButtonGroupOutside={true}
+      customButtonGroup={
+        <CustomHeaderWithArrows title={title} showArrows={showArrows} />
+      }
     >
       {items.map((item, index) => renderItem(item, index))}
     </Carousel>
@@ -129,40 +195,33 @@ const SingleMovieDetails = () => {
 
   const isDesktopOrLarger = useMediaQuery({ minWidth: 1024 });
 
-  const responsive = {
-    superLargeDesktop: { breakpoint: { max: 4000, min: 3000 }, items: 6 },
-    desktop: { breakpoint: { max: 3000, min: 2000 }, items: 5 },
-    laptop: { breakpoint: { max: 2000, min: 1024 }, items: 6 },
-    tablet: { breakpoint: { max: 1024, min: 464 }, items: 2 },
-    mobile: { breakpoint: { max: 464, min: 0 }, items: 1 },
+  const responsiveCredits = {
+    superLargeDesktop: { breakpoint: { max: 4000, min: 3000 }, items: 8 },
+    desktop: { breakpoint: { max: 3000, min: 1024 }, items: 8 },
+    tablet: { breakpoint: { max: 1024, min: 464 }, items: 3 },
+    mobile: { breakpoint: { max: 464, min: 0 }, items: 2 },
   };
 
-  const responsive5 = {
+  const responsiveVideos = {
     superLargeDesktop: { breakpoint: { max: 4000, min: 3000 }, items: 4 },
-    desktop: { breakpoint: { max: 3000, min: 1024 }, items: 4 },
-    tablet: { breakpoint: { max: 1024, min: 464 }, items: 2 },
-    mobile: { breakpoint: { max: 464, min: 0 }, items: 1 },
+    desktop: { breakpoint: { max: 3000, min: 1024 }, items: 3 },
+    tablet: { breakpoint: { max: 1024, min: 640 }, items: 2 },
+    mobile: { breakpoint: { max: 640, min: 0 }, items: 1 },
   };
 
-  const responsive3 = {
-    superLargeDesktop: { breakpoint: { max: 4000, min: 3000 }, items: 6 },
-    desktop: { breakpoint: { max: 3000, min: 1024 }, items: 6 },
-    tablet: { breakpoint: { max: 1024, min: 464 }, items: 2 },
+  const responsiveBackdrops = {
+    superLargeDesktop: { breakpoint: { max: 4000, min: 3000 }, items: 4 },
+    desktop: { breakpoint: { max: 3000, min: 1024 }, items: 3 },
+    tablet: { breakpoint: { max: 1024, min: 640 }, items: 2 },
+    mobile: { breakpoint: { max: 640, min: 0 }, items: 1 },
+  };
+
+  const responsivePosters = {
+    superLargeDesktop: { breakpoint: { max: 4000, min: 3000 }, items: 8 },
+    desktop: { breakpoint: { max: 3000, min: 1200 }, items: 7 },
+    laptop: { breakpoint: { max: 1200, min: 1024 }, items: 5 },
+    tablet: { breakpoint: { max: 1024, min: 464 }, items: 3 },
     mobile: { breakpoint: { max: 464, min: 0 }, items: 2 },
-  };
-
-  const responsive2 = {
-    superLargeDesktop: { breakpoint: { max: 4000, min: 3000 }, items: 7 },
-    desktop: { breakpoint: { max: 3000, min: 1024 }, items: 6 },
-    tablet: { breakpoint: { max: 1024, min: 464 }, items: 2 },
-    mobile: { breakpoint: { max: 464, min: 0 }, items: 2 },
-  };
-
-  const responsive4 = {
-    superLargeDesktop: { breakpoint: { max: 4000, min: 3000 }, items: 5 },
-    desktop: { breakpoint: { max: 3000, min: 1024 }, items: 5 },
-    tablet: { breakpoint: { max: 1024, min: 464 }, items: 2 },
-    mobile: { breakpoint: { max: 464, min: 0 }, items: 1 },
   };
 
   const handleImageClick = (images: any[], index: number) => {
@@ -173,34 +232,47 @@ const SingleMovieDetails = () => {
 
   const renderCredits = (credit: any) => (
     <Link href={`/people/${credit.id}`} key={credit.id}>
-      <div className="px-5 flex justify-center items-center mt-5 flex-col">
-        {credit.profile_path ? (
-          <img
-            src={`https://image.tmdb.org/t/p/w500${credit.profile_path}`}
-            alt={credit.name}
-            className="h-52 w-52 object-cover rounded-full mt-2"
-            loading="lazy"
-          />
-        ) : (
-          <div className="h-52 w-52 flex items-center justify-center rounded-full bg-gray-200 mt-2">
-            <span className="text-gray-500 pl-4 md:pl-0">{credit.name}</span>
-          </div>
+      <div className="px-2 py-4 flex flex-col items-center group cursor-pointer transition-transform duration-300 hover:-translate-y-1.5">
+        <div className="relative h-32 w-32 md:h-40 md:w-40 rounded-full overflow-hidden border-2 border-white/10 group-hover:border-blue-500 transition-all duration-300 shadow-xl bg-gray-900 flex items-center justify-center">
+          {credit.profile_path ? (
+            <Image
+              fill
+              sizes="(max-width: 768px) 8rem, 10rem"
+              src={`https://image.tmdb.org/t/p/w500${credit.profile_path}`}
+              alt={credit.name}
+              className="object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+          ) : (
+            <span className="text-gray-500 text-sm px-2 text-center font-medium">
+              {credit.name}
+            </span>
+          )}
+        </div>
+        <p className="text-white text-center font-bold text-sm md:text-base mt-4 group-hover:text-blue-400 transition-colors line-clamp-1 px-1">
+          {credit.name}
+        </p>
+        {credit.character && (
+          <p className="text-gray-400 text-center text-xs md:text-sm line-clamp-1 px-1 mt-0.5">
+            {credit.character}
+          </p>
         )}
-        <p className="text-white text-center pt-4 pb-5">{credit.name}</p>
       </div>
     </Link>
   );
 
   const renderVideos = (video: any) => (
-    <div key={video.key} className="px-2 flex justify-center">
-      <div className="rounded-lg">
+    <div key={video.key} className="px-2 py-4">
+      <div className="relative aspect-video w-full rounded-2xl overflow-hidden shadow-2xl border border-white/10 group bg-gray-900">
         <iframe
           src={`https://www.youtube.com/embed/${video.key}`}
           title={video.name}
-          className="w-auto h-60 border-none"
+          className="absolute inset-0 w-full h-full border-none"
           allowFullScreen
         ></iframe>
       </div>
+      <p className="text-gray-300 text-sm font-semibold mt-3 px-1 line-clamp-1 text-center md:text-left">
+        {video.name}
+      </p>
     </div>
   );
 
@@ -209,129 +281,148 @@ const SingleMovieDetails = () => {
     baseUrl: string,
     altText: string,
     onClick?: () => void,
+    isBackdrop = false,
   ) => (
     <div
       key={image.file_path}
-      className="p-2 cursor-pointer transition-transform hover:scale-[1.02]"
+      className="px-2 py-4 cursor-pointer"
       onClick={onClick}
     >
-      <img
-        src={`${baseUrl}${image.file_path}`}
-        alt={altText}
-        className="w-full h-full object-cover rounded-lg hover:opacity-90 transition-opacity"
-        loading="lazy"
-      />
+      <div
+        className={`relative ${isBackdrop ? "aspect-video" : "aspect-[2/3]"} w-full rounded-2xl overflow-hidden border border-white/10 shadow-xl group bg-gray-900`}
+      >
+        <div className="absolute inset-0 bg-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 flex items-center justify-center">
+          <span className="bg-black/60 backdrop-blur-md text-white px-4 py-2 rounded-full text-xs font-semibold border border-white/20 shadow-lg transform scale-90 group-hover:scale-100 transition-transform">
+            Click to View
+          </span>
+        </div>
+        <Image
+          fill
+          sizes="(max-width: 768px) 50vw, 25vw"
+          src={`${baseUrl}${image.file_path}`}
+          alt={altText}
+          className="object-cover group-hover:scale-105 transition-transform duration-500"
+        />
+      </div>
     </div>
   );
 
   const renderMovies = (movie: any, baseUrl: string, altText: string) => (
     <Link href={`/movie/${movie.id}`} key={movie.id}>
-      <div className="p-2">
-        {movie.poster_path ? (
-          <img
-            src={`${baseUrl}${movie.poster_path}`}
-            alt={altText}
-            className="w-full h-full object-cover rounded-lg"
-            loading="lazy"
-          />
-        ) : (
-          <div>
+      <div className="px-2 py-4 group cursor-pointer">
+        <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden border border-white/10 shadow-xl bg-gray-900 transition-transform duration-500 group-hover:scale-[1.03]">
+          <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-transparent to-transparent opacity-0 group-hover:opacity-90 transition-opacity duration-300 z-10 flex flex-col justify-end p-4">
+            <span className="text-blue-400 font-bold text-xs uppercase tracking-wider mb-1">
+              View Details
+            </span>
+            <p className="text-white font-bold text-sm line-clamp-2 mb-1">
+              {movie.title}
+            </p>
+            {movie.release_date && (
+              <span className="text-gray-400 text-xs">
+                {movie.release_date.substring(0, 4)}
+              </span>
+            )}
+          </div>
+          {movie.poster_path ? (
+            <Image
+              fill
+              sizes="(max-width: 768px) 50vw, 25vw"
+              src={`${baseUrl}${movie.poster_path}`}
+              alt={altText}
+              className="object-cover group-hover:scale-105 transition-transform duration-700"
+            />
+          ) : (
             <img
               src="/Images/klkl.jpg"
-              alt={movie.name}
-              className="w-full h-full object-cover rounded-lg"
+              alt={movie.title}
+              className="w-full h-full object-cover"
               loading="lazy"
             />
-          </div>
-        )}
-        <p className="text-white text-center pt-4 pb-5">{movie.title}</p>
+          )}
+        </div>
+        <p className="text-white text-center font-bold text-sm pt-3 px-1 group-hover:text-blue-400 transition-colors line-clamp-1">
+          {movie.title}
+        </p>
       </div>
     </Link>
   );
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto px-4 w-full mx-auto">
       {credits.length > 0 && (
-        <div>
-          <h2 className="text-xl font-semibold text-white pl-0 md:pl-2 text-center md:text-left">
-            Credits for this movie
-          </h2>
+        <div className=" flex flex-col-reverse">
           <MemoizedCarousel
             items={credits}
-            responsive={responsive}
+            responsive={responsiveCredits}
             renderItem={renderCredits}
             autoPlay={false}
+            showArrows={isDesktopOrLarger}
+            title="Cast & Crew"
           />
         </div>
       )}
 
       {videos.length > 0 && (
-        <div className="mb-0 md:mb-5 hidden md:block">
-          <h2 className="text-xl font-semibold text-white pl-0 md:pl-2 text-center md:text-left mt-10">
-            Related Videos
-          </h2>
+        <div className=" flex flex-col-reverse">
           <MemoizedCarousel
             items={videos}
-            responsive={responsive5}
+            responsive={responsiveVideos}
             renderItem={renderVideos}
             autoPlay={false}
             showArrows={isDesktopOrLarger}
+            title="Official Trailers & Videos"
           />
         </div>
       )}
 
       {backdrops.length > 0 && (
-        <div className="mb-0 md:mb-5">
-          <h2 className="text-xl font-semibold text-white pl-0 md:pl-2 pb-5 text-center md:text-left mt-10">
-            Related Images
-          </h2>
+        <div className=" flex flex-col-reverse">
           <MemoizedCarousel
             items={backdrops}
-            responsive={responsive4}
+            responsive={responsiveBackdrops}
             renderItem={(image, index) =>
               renderImages(
                 image,
                 "https://image.tmdb.org/t/p/original",
                 "backdrop",
                 () => handleImageClick(backdrops, index),
+                true,
               )
             }
             autoPlay={true}
             showArrows={isDesktopOrLarger}
+            title="Cinematic Backdrops"
           />
         </div>
       )}
 
       {posters.length > 0 && (
-        <div className="mb-0 md:mb-5">
-          <h2 className="text-xl font-semibold text-white pl-0 md:pl-2 pb-5 text-center md:text-left mt-10">
-            Poster Images
-          </h2>
+        <div className=" flex flex-col-reverse">
           <MemoizedCarousel
             items={posters}
-            responsive={responsive2}
+            responsive={responsivePosters}
             renderItem={(image, index) =>
               renderImages(
                 image,
                 "https://image.tmdb.org/t/p/original",
                 "poster",
                 () => handleImageClick(posters, index),
+                false,
               )
             }
             autoPlay={true}
             showArrows={isDesktopOrLarger}
+            title="Movie Posters"
           />
         </div>
       )}
 
       {similar.length > 0 && (
-        <div className="mb-0 md:mb-5">
-          <h2 className="text-xl pb-5 font-semibold text-white pl-0 md:pl-2 text-center md:text-left mt-10">
-            Related Similar Movies
-          </h2>
+        <div className=" flex flex-col-reverse">
           <MemoizedCarousel
             items={similar}
-            responsive={responsive2}
+            responsive={responsivePosters}
             renderItem={(movie) =>
               renderMovies(
                 movie,
@@ -341,18 +432,16 @@ const SingleMovieDetails = () => {
             }
             autoPlay={true}
             showArrows={isDesktopOrLarger}
+            title="Similar Movies"
           />
         </div>
       )}
 
       {recommendation.length > 0 && (
-        <div className="mb-0 md:mb-5">
-          <h2 className="text-xl font-semibold pb-5 text-white pl-0 md:pl-2 text-center md:text-left ">
-            Recommendation Movies
-          </h2>
+        <div className=" flex flex-col-reverse">
           <MemoizedCarousel
             items={recommendation}
-            responsive={responsive2}
+            responsive={responsivePosters}
             renderItem={(movie) =>
               renderMovies(
                 movie,
@@ -362,6 +451,7 @@ const SingleMovieDetails = () => {
             }
             autoPlay={true}
             showArrows={isDesktopOrLarger}
+            title="Recommended For You"
           />
         </div>
       )}

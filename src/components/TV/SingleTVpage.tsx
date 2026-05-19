@@ -1,119 +1,107 @@
 "use client";
-import React, { useState, useEffect, Suspense, lazy } from "react";
+import React, { useState, useEffect, Suspense } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
+import { useMediaQuery } from "react-responsive";
 import FullScreenImage from "@/components/ui/FullScreenImage";
 
-// Lazy load the Carousel component
-const Carousel = lazy(() => import("react-multi-carousel"));
-
-const responsive = {
-  superLargeDesktop: { breakpoint: { max: 4000, min: 3000 }, items: 7 },
-  desktop: { breakpoint: { max: 3000, min: 2000 }, items: 5 },
-  laptop: { breakpoint: { max: 2000, min: 1024 }, items: 6 },
-  tablet: { breakpoint: { max: 1024, min: 464 }, items: 2 },
-  mobile: { breakpoint: { max: 464, min: 0 }, items: 1 },
-};
-
-const responsive2 = {
-  superLargeDesktop: { breakpoint: { max: 4000, min: 3000 }, items: 7 },
-  desktop: { breakpoint: { max: 3000, min: 1024 }, items: 6 },
-  tablet: { breakpoint: { max: 1024, min: 464 }, items: 2 },
-  mobile: { breakpoint: { max: 464, min: 0 }, items: 2 },
-};
-
-const responsive3 = {
-  superLargeDesktop: { breakpoint: { max: 4000, min: 3000 }, items: 5 },
-  desktop: { breakpoint: { max: 3000, min: 1024 }, items: 4 },
-  tablet: { breakpoint: { max: 1024, min: 464 }, items: 2 },
-  mobile: { breakpoint: { max: 464, min: 0 }, items: 1 },
-};
-
-const responsive4 = {
-  superLargeDesktop: { breakpoint: { max: 4000, min: 3000 }, items: 5 },
-  desktop: { breakpoint: { max: 3000, min: 1024 }, items: 5 },
-  tablet: { breakpoint: { max: 1024, min: 464 }, items: 2 },
-  mobile: { breakpoint: { max: 464, min: 0 }, items: 1 },
-};
-
-interface CarouselSectionProps {
-  title: string;
-  items: any[];
-  renderItem: (item: any, index: number) => React.ReactNode;
-  responsive: any;
-  showArrows?: boolean;
-}
-
-interface CustomArrowProps {
-  onClick?: () => void;
-  carouselState?: any;
-  rtl?: boolean;
-}
-
-const CustomRightArrow = ({ onClick }: CustomArrowProps) => {
-  return (
-    <div className="custom-arrow custom-arrow-right" onClick={onClick}>
-      <span>&gt;</span>
-    </div>
-  );
-};
-
-const CustomLeftArrow = ({ onClick }: CustomArrowProps) => {
-  return (
-    <div className="custom-arrow custom-arrow-left" onClick={onClick}>
-      <span>&lt;</span>
-    </div>
-  );
-};
-
-const CarouselSection = ({
-  title,
-  items,
-  renderItem,
-  responsive,
-}: CarouselSectionProps) => {
-  // Determine whether to show arrows based on window width
-  const [showArrows, setShowArrows] = useState(true);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setShowArrows(window.innerWidth > 1024); // Adjust threshold as needed
-    };
-
-    window.addEventListener("resize", handleResize);
-    handleResize(); // Check on mount
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
-  return (
-    <div className="mb-8">
-      <h2 className="text-xl font-semibold text-white pl-0 md:pl-2 text-center md:text-left">
+const CustomHeaderWithArrows = ({ next, previous, title, showArrows }: any) => (
+  <div className="flex items-center justify-between mb-4 mt-12 px-2">
+    <div className="flex items-center gap-3">
+      <div className="w-1.5 h-7 bg-blue-500 rounded-full inline-block"></div>
+      <h2 className="text-2xl md:text-3xl font-black tracking-tight text-white">
         {title}
       </h2>
-      <Carousel
-        responsive={responsive}
-        infinite={true}
-        autoPlay={false}
-        keyBoardControl={true}
-        transitionDuration={1000}
-        arrows={showArrows} // Toggle arrows based on state
-        showDots={false}
-        draggable={true}
-        swipeable={true}
-        containerClass="carousel-container"
-        itemClass="carousel-item"
-        customRightArrow={showArrows ? <CustomRightArrow /> : undefined}
-        customLeftArrow={showArrows ? <CustomLeftArrow /> : undefined}
-      >
-        {items.map((item, index) => renderItem(item, index))}
-      </Carousel>
     </div>
-  );
-};
+    {showArrows && (
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => previous?.()}
+          className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gray-900/80 backdrop-blur-md border border-white/10 hover:border-blue-500 hover:bg-gray-800 text-white flex items-center justify-center transition-all shadow-lg active:scale-95 group"
+          aria-label="Previous"
+        >
+          <svg
+            className="w-5 h-5 text-gray-300 group-hover:text-white transition-colors"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2.5"
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+        </button>
+        <button
+          onClick={() => next?.()}
+          className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gray-900/80 backdrop-blur-md border border-white/10 hover:border-blue-500 hover:bg-gray-800 text-white flex items-center justify-center transition-all shadow-lg active:scale-95 group"
+          aria-label="Next"
+        >
+          <svg
+            className="w-5 h-5 text-gray-300 group-hover:text-white transition-colors"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2.5"
+              d="M9 5l7 7-7 7"
+            />
+          </svg>
+        </button>
+      </div>
+    )}
+  </div>
+);
+
+interface CarouselProps {
+  items: any[];
+  responsive: any;
+  renderItem: (item: any, index: number) => React.ReactNode;
+  autoPlay: boolean;
+  showArrows?: boolean;
+  title: string;
+}
+
+// Memoized Carousel component to prevent unnecessary re-renders
+const MemoizedCarousel = React.memo(
+  ({
+    items,
+    responsive,
+    renderItem,
+    autoPlay,
+    showArrows,
+    title,
+  }: CarouselProps) => (
+    <Carousel
+      responsive={responsive}
+      infinite={true}
+      autoPlay={autoPlay}
+      autoPlaySpeed={5000}
+      keyBoardControl={true}
+      transitionDuration={1000}
+      arrows={false}
+      showDots={false}
+      containerClass="carousel-container"
+      itemClass="carousel-item"
+      draggable={true} // Enable dragging
+      swipeable={true} // Enable swiping
+      renderButtonGroupOutside={true}
+      customButtonGroup={
+        <CustomHeaderWithArrows title={title} showArrows={showArrows} />
+      }
+    >
+      {items.map((item, index) => renderItem(item, index))}
+    </Carousel>
+  ),
+);
 
 export default function SingleTVpage() {
   const API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
@@ -202,176 +190,290 @@ export default function SingleTVpage() {
     fetchTVData();
   }, [id]);
 
+  const isDesktopOrLarger = useMediaQuery({ minWidth: 1024 });
+
+  const responsiveCredits = {
+    superLargeDesktop: { breakpoint: { max: 4000, min: 3000 }, items: 8 },
+    desktop: { breakpoint: { max: 3000, min: 1024 }, items: 8 },
+    tablet: { breakpoint: { max: 1024, min: 464 }, items: 3 },
+    mobile: { breakpoint: { max: 464, min: 0 }, items: 2 },
+  };
+
+  const responsiveVideos = {
+    superLargeDesktop: { breakpoint: { max: 4000, min: 3000 }, items: 4 },
+    desktop: { breakpoint: { max: 3000, min: 1024 }, items: 3 },
+    tablet: { breakpoint: { max: 1024, min: 640 }, items: 2 },
+    mobile: { breakpoint: { max: 640, min: 0 }, items: 1 },
+  };
+
+  const responsiveBackdrops = {
+    superLargeDesktop: { breakpoint: { max: 4000, min: 3000 }, items: 4 },
+    desktop: { breakpoint: { max: 3000, min: 1024 }, items: 3 },
+    tablet: { breakpoint: { max: 1024, min: 640 }, items: 2 },
+    mobile: { breakpoint: { max: 640, min: 0 }, items: 1 },
+  };
+
+  const responsivePosters = {
+    superLargeDesktop: { breakpoint: { max: 4000, min: 3000 }, items: 8 },
+    desktop: { breakpoint: { max: 3000, min: 1200 }, items: 7 },
+    laptop: { breakpoint: { max: 1200, min: 1024 }, items: 5 },
+    tablet: { breakpoint: { max: 1024, min: 464 }, items: 3 },
+    mobile: { breakpoint: { max: 464, min: 0 }, items: 2 },
+  };
+
   const handleImageClick = (images: any[], index: number) => {
     setFullScreenImages(images);
     setInitialImageIndex(index);
     setIsImageOpen(true);
   };
 
-  if (loading) {
-    return <div className="loading">Loading...</div>; // Add a proper loading state
-  }
-
-  if (error) {
-    return <div className="error">{error}</div>; // Display error message
-  }
-
-  return (
-    <div className="container mx-auto p-4">
-      <Suspense fallback={<div>Loading Carousel...</div>}>
-        {credits && credits.length > 0 && (
-          <CarouselSection
-            title="Credits"
-            items={credits}
-            showArrows={true}
-            responsive={responsive}
-            renderItem={(credit) => (
-              <Link key={credit.id} href={`/people/${credit.id}`}>
-                <div className="flex justify-center items-center mt-5 flex-col">
-                  {credit.profile_path ? (
-                    <img
-                      src={`https://image.tmdb.org/t/p/w500${credit.profile_path}`}
-                      alt={credit.name}
-                      className="h-52 w-52 object-cover rounded-full mt-2"
-                    />
-                  ) : (
-                    <div className="h-52 w-52 flex items-center justify-center rounded-full bg-gray-200 mt-2">
-                      <span className="text-gray-500">{credit.name}</span>
-                    </div>
-                  )}
-                  <p className="text-white text-center pt-4 pb-5">
-                    {credit.name}
-                  </p>
-                </div>
-              </Link>
-            )}
-          />
+  const renderCredits = (credit: any) => (
+    <Link href={`/people/${credit.id}`} key={credit.id}>
+      <div className="px-2 py-4 flex flex-col items-center group cursor-pointer transition-transform duration-300 hover:-translate-y-1.5">
+        <div className="relative h-32 w-32 md:h-40 md:w-40 rounded-full overflow-hidden border-2 border-white/10 group-hover:border-blue-500 transition-all duration-300 shadow-xl bg-gray-900 flex items-center justify-center">
+          {credit.profile_path ? (
+            <Image
+              fill
+              sizes="(max-width: 768px) 8rem, 10rem"
+              src={`https://image.tmdb.org/t/p/w500${credit.profile_path}`}
+              alt={credit.name}
+              className="object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+          ) : (
+            <span className="text-gray-500 text-sm px-2 text-center font-medium">
+              {credit.name}
+            </span>
+          )}
+        </div>
+        <p className="text-white text-center font-bold text-sm md:text-base mt-4 group-hover:text-blue-400 transition-colors line-clamp-1 px-1">
+          {credit.name}
+        </p>
+        {credit.character && (
+          <p className="text-gray-400 text-center text-xs md:text-sm line-clamp-1 px-1 mt-0.5">
+            {credit.character}
+          </p>
         )}
+      </div>
+    </Link>
+  );
 
-        <div className="hidden md:block">
-          {videos && videos.length > 0 && (
-            <CarouselSection
-              title="Watch Videos and Trailers"
-              items={videos}
-              responsive={responsive3}
-              renderItem={(video) => (
-                <div key={video.key} className="px-2 flex justify-center ">
-                  <div className="rounded-lg">
-                    <iframe
-                      src={`https://www.youtube.com/embed/${video.key}`}
-                      title={video.name}
-                      className="w-auto h-52 border-none"
-                      allowFullScreen
-                    ></iframe>
-                  </div>
-                </div>
-              )}
+  const renderVideos = (video: any) => (
+    <div key={video.key} className="px-2 py-4">
+      <div className="relative aspect-video w-full rounded-2xl overflow-hidden shadow-2xl border border-white/10 group bg-gray-900">
+        <iframe
+          src={`https://www.youtube.com/embed/${video.key}`}
+          title={video.name}
+          className="absolute inset-0 w-full h-full border-none"
+          allowFullScreen
+        ></iframe>
+      </div>
+      <p className="text-gray-300 text-sm font-semibold mt-3 px-1 line-clamp-1 text-center md:text-left">
+        {video.name}
+      </p>
+    </div>
+  );
+
+  const renderImages = (
+    image: any,
+    baseUrl: string,
+    altText: string,
+    onClick?: () => void,
+    isBackdrop = false,
+  ) => (
+    <div
+      key={image.file_path}
+      className="px-2 py-4 cursor-pointer"
+      onClick={onClick}
+    >
+      <div
+        className={`relative ${isBackdrop ? "aspect-video" : "aspect-[2/3]"} w-full rounded-2xl overflow-hidden border border-white/10 shadow-xl group bg-gray-900`}
+      >
+        <div className="absolute inset-0 bg-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 flex items-center justify-center">
+          <span className="bg-black/60 backdrop-blur-md text-white px-4 py-2 rounded-full text-xs font-semibold border border-white/20 shadow-lg transform scale-90 group-hover:scale-100 transition-transform">
+            Click to View
+          </span>
+        </div>
+        <Image
+          fill
+          sizes="(max-width: 768px) 50vw, 25vw"
+          src={`${baseUrl}${image.file_path}`}
+          alt={altText}
+          className="object-cover group-hover:scale-105 transition-transform duration-500"
+        />
+      </div>
+    </div>
+  );
+
+  const renderShows = (show: any, baseUrl: string, altText: string) => (
+    <Link href={`/tv/${show.id}`} key={show.id}>
+      <div className="px-2 py-4 group cursor-pointer">
+        <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden border border-white/10 shadow-xl bg-gray-900 transition-transform duration-500 group-hover:scale-[1.03]">
+          <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-transparent to-transparent opacity-0 group-hover:opacity-90 transition-opacity duration-300 z-10 flex flex-col justify-end p-4">
+            <span className="text-blue-400 font-bold text-xs uppercase tracking-wider mb-1">
+              View Details
+            </span>
+            <p className="text-white font-bold text-sm line-clamp-2 mb-1">
+              {show.name}
+            </p>
+            {show.first_air_date && (
+              <span className="text-gray-400 text-xs">
+                {show.first_air_date.substring(0, 4)}
+              </span>
+            )}
+          </div>
+          {show.poster_path ? (
+            <Image
+              fill
+              sizes="(max-width: 768px) 50vw, 25vw"
+              src={`${baseUrl}${show.poster_path}`}
+              alt={altText}
+              className="object-cover group-hover:scale-105 transition-transform duration-700"
+            />
+          ) : (
+            <img
+              src="/Images/klkl.jpg"
+              alt={show.name}
+              className="w-full h-full object-cover"
+              loading="lazy"
             />
           )}
         </div>
+        <p className="text-white text-center font-bold text-sm pt-3 px-1 group-hover:text-blue-400 transition-colors line-clamp-1">
+          {show.name}
+        </p>
+      </div>
+    </Link>
+  );
+
+  if (loading) {
+    return (
+      <div className="loading text-white text-center py-12 font-semibold">
+        Loading...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="error text-red-400 text-center py-12 font-semibold">
+        {error}
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto px-4 w-full mx-auto">
+      <Suspense
+        fallback={
+          <div className="text-white text-center py-12 font-semibold">
+            Loading Carousel...
+          </div>
+        }
+      >
+        {credits && credits.length > 0 && (
+          <div className=" flex flex-col-reverse">
+            <MemoizedCarousel
+              items={credits}
+              responsive={responsiveCredits}
+              renderItem={renderCredits}
+              autoPlay={false}
+              showArrows={isDesktopOrLarger}
+              title="Cast & Crew"
+            />
+          </div>
+        )}
+
+        {videos && videos.length > 0 && (
+          <div className=" flex flex-col-reverse">
+            <MemoizedCarousel
+              items={videos}
+              responsive={responsiveVideos}
+              renderItem={renderVideos}
+              autoPlay={false}
+              showArrows={isDesktopOrLarger}
+              title="Official Trailers & Videos"
+            />
+          </div>
+        )}
 
         {backdrops && backdrops.length > 0 && (
-          <CarouselSection
-            title="Backdrops"
-            items={backdrops}
-            responsive={responsive4}
-            renderItem={(backdrop, index) => (
-              <div
-                key={backdrop.file_path}
-                className="p-2 cursor-pointer transition-transform hover:scale-[1.02]"
-                onClick={() => handleImageClick(backdrops, index)}
-              >
-                <img
-                  src={`https://image.tmdb.org/t/p/original${backdrop.file_path}`}
-                  alt="Backdrop"
-                  className="w-full h-full object-cover rounded-lg pt-5 hover:opacity-90 transition-opacity"
-                />
-              </div>
-            )}
-          />
+          <div className=" flex flex-col-reverse">
+            <MemoizedCarousel
+              items={backdrops}
+              responsive={responsiveBackdrops}
+              renderItem={(image, index) =>
+                renderImages(
+                  image,
+                  "https://image.tmdb.org/t/p/original",
+                  "backdrop",
+                  () => handleImageClick(backdrops, index),
+                  true,
+                )
+              }
+              autoPlay={true}
+              showArrows={isDesktopOrLarger}
+              title="Cinematic Backdrops"
+            />
+          </div>
         )}
 
         {posters && posters.length > 0 && (
-          <CarouselSection
-            title="Posters"
-            items={posters}
-            responsive={responsive2}
-            renderItem={(poster, index) => (
-              <div
-                key={poster.file_path}
-                className="p-2 cursor-pointer transition-transform hover:scale-[1.02]"
-                onClick={() => handleImageClick(posters, index)}
-              >
-                <div className="w-full h-full">
-                  {poster.file_path ? (
-                    <img
-                      src={`https://image.tmdb.org/t/p/w500${poster.file_path}`}
-                      alt="Poster"
-                      className="w-full h-full object-cover rounded-lg pt-5 hover:opacity-90 transition-opacity"
-                    />
-                  ) : (
-                    <div className="h-52 w-full flex items-center justify-center rounded-lg bg-gray-200 pt-5">
-                      <span className="text-gray-500">No Poster Available</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-          />
+          <div className=" flex flex-col-reverse">
+            <MemoizedCarousel
+              items={posters}
+              responsive={responsivePosters}
+              renderItem={(image, index) =>
+                renderImages(
+                  image,
+                  "https://image.tmdb.org/t/p/original",
+                  "poster",
+                  () => handleImageClick(posters, index),
+                  false,
+                )
+              }
+              autoPlay={true}
+              showArrows={isDesktopOrLarger}
+              title="TV Show Posters"
+            />
+          </div>
         )}
 
         {similar && similar.length > 0 && (
-          <CarouselSection
-            title="Similar Shows"
-            items={similar}
-            responsive={responsive2}
-            renderItem={(show) => (
-              <Link key={show.id} href={`/tv/${show.id}`}>
-                <div className="p-2">
-                  {show.poster_path ? (
-                    <img
-                      src={`https://image.tmdb.org/t/p/w500${show.poster_path}`}
-                      alt={show.name}
-                      className="w-full h-full object-cover rounded-lg pt-5"
-                    />
-                  ) : (
-                    <div className="h-52 w-full flex items-center justify-center rounded-lg bg-gray-200">
-                      <span className="text-gray-500">No Poster Available</span>
-                    </div>
-                  )}
-                  <p className="text-white text-center pt-2">{show.name}</p>
-                </div>
-              </Link>
-            )}
-          />
+          <div className=" flex flex-col-reverse">
+            <MemoizedCarousel
+              items={similar}
+              responsive={responsivePosters}
+              renderItem={(show) =>
+                renderShows(
+                  show,
+                  "https://image.tmdb.org/t/p/original",
+                  "similar show",
+                )
+              }
+              autoPlay={true}
+              showArrows={isDesktopOrLarger}
+              title="Similar Shows"
+            />
+          </div>
         )}
 
         {recommendations && recommendations.length > 0 && (
-          <CarouselSection
-            title="Recommendations"
-            items={recommendations}
-            responsive={responsive2}
-            renderItem={(recommendation) => (
-              <Link key={recommendation.id} href={`/tv/${recommendation.id}`}>
-                <div className="p-2">
-                  {recommendation.poster_path ? (
-                    <img
-                      src={`https://image.tmdb.org/t/p/w500${recommendation.poster_path}`}
-                      alt={recommendation.name}
-                      className="w-full h-full object-cover rounded-lg pt-5"
-                    />
-                  ) : (
-                    <div className="h-52 w-full flex items-center justify-center rounded-lg bg-gray-200">
-                      <span className="text-gray-500">No Poster Available</span>
-                    </div>
-                  )}
-                  <p className="text-white text-center pt-2">
-                    {recommendation.name}
-                  </p>
-                </div>
-              </Link>
-            )}
-          />
+          <div className=" flex flex-col-reverse">
+            <MemoizedCarousel
+              items={recommendations}
+              responsive={responsivePosters}
+              renderItem={(show) =>
+                renderShows(
+                  show,
+                  "https://image.tmdb.org/t/p/original",
+                  "recommendation show",
+                )
+              }
+              autoPlay={true}
+              showArrows={isDesktopOrLarger}
+              title="Recommended For You"
+            />
+          </div>
         )}
       </Suspense>
 

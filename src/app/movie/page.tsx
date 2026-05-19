@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import AllmoviesTMDB from "@/components/Movie/AllmoviesTMDB";
-import { generateBreadcrumbJsonLd } from "@/lib/seo";
+import { generateBreadcrumbJsonLd, generateCollectionJsonLd } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Browse All Movies - Popular, Top Rated & Now Playing",
@@ -38,11 +38,21 @@ export default function AllMoviesPage() {
     { name: "Movies", path: "/movie" },
   ]);
 
+  const collectionJsonLd = generateCollectionJsonLd({
+    name: "Browse All Movies",
+    description: "Explore popular films, top-rated masterpieces, now playing in theaters, and upcoming releases.",
+    path: "/movie",
+  });
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionJsonLd) }}
       />
       <AllmoviesTMDB />
     </>

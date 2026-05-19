@@ -1,7 +1,7 @@
 {
   "name": "Unimovies - Your Ultimate Movie Destination",
   "short_name": "Unimovies",
-  "description": "Discover movies, TV shows, and celebrities. Your ultimate entertainment companion.",
+  "description": "Discover movies, TV shows, celebrities, and award-winning masterpieces. Explore Oscar winners, Cannes Palme d'Or, Golden Globes, and more. Your ultimate entertainment companion.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",
@@ -9,7 +9,37 @@
   "orientation": "any",
   "scope": "/",
   "lang": "en",
-  "categories": ["entertainment", "movies"],
+  "categories": ["entertainment", "movies", "tv", "awards"],
+  "shortcuts": [
+    {
+      "name": "Browse Movies",
+      "short_name": "Movies",
+      "description": "Explore trending, upcoming, and top-rated movies",
+      "url": "/movie",
+      "icons": [{ "src": "/icons/icon-96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "TV Shows",
+      "short_name": "TV",
+      "description": "Discover popular and trending TV series",
+      "url": "/tv",
+      "icons": [{ "src": "/icons/icon-96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Award-Winning Films",
+      "short_name": "Awards",
+      "description": "Oscar, Cannes, Golden Globe winners and acclaimed animated features",
+      "url": "/awards",
+      "icons": [{ "src": "/icons/icon-96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Popular People",
+      "short_name": "People",
+      "description": "Explore celebrity profiles, actors, and directors",
+      "url": "/people",
+      "icons": [{ "src": "/icons/icon-96.png", "sizes": "96x96" }]
+    }
+  ],
   "icons": [
     {
       "src": "/icons/icon-72.png",

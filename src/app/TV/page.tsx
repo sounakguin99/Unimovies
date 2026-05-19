@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import TV from "@/components/TV/TV";
-import { generateBreadcrumbJsonLd } from "@/lib/seo";
+import { generateBreadcrumbJsonLd, generateCollectionJsonLd } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Browse TV Shows - Popular Series, Top Rated & Trending",
@@ -38,11 +38,21 @@ export default function TVPage() {
     { name: "TV Shows", path: "/tv" },
   ]);
 
+  const collectionJsonLd = generateCollectionJsonLd({
+    name: "Browse TV Shows",
+    description: "Discover popular series, top-rated dramas, trending comedies, and award-winning shows.",
+    path: "/tv",
+  });
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionJsonLd) }}
       />
       <TV />
     </>

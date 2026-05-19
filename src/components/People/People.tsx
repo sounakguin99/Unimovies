@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import SearchbarPeople from "./SearchbarPeople";
 import { Person } from "@/types";
@@ -61,56 +62,111 @@ export default function People() {
   }, []);
 
   return (
-    <div className="w-full px-4 md:px-8 py-8 bg-black min-h-screen">
-      <SearchbarPeople onSearch={handleData} />
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 mt-8">
-        {people.map((actor) => (
-          <div
-            key={actor.id}
-            className="group relative bg-gray-900 rounded-xl overflow-hidden shadow-lg transition-transform duration-300 hover:scale-105 hover:shadow-2xl hover:bg-gray-800"
-          >
-            <Link href={`/people/${actor.id}`}>
-              <div className="aspect-[2/3] w-full overflow-hidden">
-                <img
-                  src={
-                    actor.profile_path
-                      ? `https://image.tmdb.org/t/p/w500${actor.profile_path}`
-                      : "/Images/ok.jpeg"
-                  }
-                  alt={actor.name}
-                  className="w-full h-full object-cover transition-opacity duration-300 hover:opacity-90"
-                />
+    <div className="w-full bg-black min-h-screen pb-16">
+      {/* Cinematic Hero Header */}
+      <div className="relative w-full h-[40vh] md:h-[50vh] flex items-center justify-center overflow-hidden border-b border-white/5">
+        <div className="absolute inset-0 bg-[url('/Images/ok.jpeg')] bg-cover bg-center opacity-30 filter blur-sm transform scale-105"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent"></div>
+        <div className="relative z-10 text-center px-4 max-w-4xl mx-auto pt-16">
+          <h1 className="text-5xl md:text-7xl font-black text-white tracking-tight mb-4 drop-shadow-2xl">
+            Popular{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+              Celebrities
+            </span>
+          </h1>
+          <p className="text-gray-400 text-lg md:text-xl font-medium drop-shadow-md">
+            Discover the most trending actors, directors, and filmmakers shaping
+            the industry today.
+          </p>
+        </div>
+      </div>
+
+      <div className="max-w-[1600px] mx-auto">
+        <SearchbarPeople onSearch={handleData} />
+
+        <div className="px-4 md:px-8">
+          <div className={`grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-4 md:gap-6 lg:gap-8 mt-8 transition-all duration-300 ${isLoading && page === 1 && people.length > 0 ? "opacity-40 blur-[2px] pointer-events-none" : "opacity-100 blur-0"}`}>
+            {people.map((actor) => (
+              <div
+                key={actor.id}
+                className="group relative rounded-2xl overflow-hidden shadow-2xl bg-gray-900 border border-white/5 cursor-pointer aspect-[2/3] transition-all duration-500 hover:shadow-[0_0_40px_rgba(59,130,246,0.3)] hover:-translate-y-2"
+              >
+                <Link href={`/people/${actor.id}`}>
+                  <div className="relative w-full h-full">
+                    {actor.profile_path ? (
+                      <Image
+                        fill
+                        sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
+                        src={`https://image.tmdb.org/t/p/w500${actor.profile_path}`}
+                        alt={actor.name}
+                        className="object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                    ) : (
+                      <img
+                        src="/Images/ok.jpeg"
+                        alt={actor.name}
+                        className="w-full h-full object-cover"
+                      />
+                    )}
+
+                    {/* Gradient Overlay for Text */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+                    {/* Hover Glow Effect */}
+                    <div className="absolute inset-0 bg-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 mix-blend-overlay"></div>
+
+                    {/* Text Content */}
+                    <div className="absolute bottom-0 inset-x-0 p-4 md:p-5 flex flex-col justify-end transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                      <h3 className="text-white font-bold text-lg md:text-xl line-clamp-1 drop-shadow-md">
+                        {actor.name || actor.original_name}
+                      </h3>
+                      {actor.known_for_department && (
+                        <p className="text-blue-400 text-xs md:text-sm font-semibold mt-1 tracking-wider uppercase">
+                          {actor.known_for_department}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </Link>
               </div>
-            </Link>
-            <div className="p-3 text-center">
-              <p className="text-white font-medium text-sm md:text-base truncate">
-                {actor.original_name}
-              </p>
-            </div>
+            ))}
+            {isLoading && (people.length === 0 || page > 1) &&
+              [...Array(14)].map((_, i) => (
+                <div
+                  key={`skeleton-${i}`}
+                  className="relative rounded-2xl overflow-hidden shadow-2xl bg-gray-900 border border-white/5 aspect-[2/3]"
+                >
+                  <Skeleton
+                    height="100%"
+                    baseColor="#111"
+                    highlightColor="#222"
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: "100%",
+                    }}
+                  />
+                  <div className="absolute bottom-0 inset-x-0 p-4 md:p-5 z-10 bg-gradient-to-t from-black/90 to-transparent">
+                    <Skeleton
+                      width="80%"
+                      height={24}
+                      baseColor="#222"
+                      highlightColor="#333"
+                      className="mb-2"
+                    />
+                    <Skeleton
+                      width="50%"
+                      height={16}
+                      baseColor="#222"
+                      highlightColor="#333"
+                    />
+                  </div>
+                </div>
+              ))}
           </div>
-        ))}
-        {isLoading &&
-          [...Array(12)].map((_, i) => (
-            <div
-              key={i}
-              className="bg-gray-900 rounded-xl overflow-hidden shadow-lg"
-            >
-              <Skeleton
-                className="aspect-[2/3] w-full"
-                baseColor="#202020"
-                highlightColor="#444"
-              />
-              <div className="p-3">
-                <Skeleton
-                  height={20}
-                  width="80%"
-                  className="mx-auto"
-                  baseColor="#202020"
-                  highlightColor="#444"
-                />
-              </div>
-            </div>
-          ))}
+        </div>
       </div>
     </div>
   );

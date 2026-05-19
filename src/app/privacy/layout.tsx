@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
+import { generateBreadcrumbJsonLd } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Privacy Policy - How We Protect Your Data",
   description:
-    "Read Unimovies' Privacy Policy to understand how we collect, use, and protect your personal data. We are committed to safeguarding your privacy and security.",
+    "Learn how Unimovies collects, uses, and protects your personal information. Read our comprehensive privacy policy covering data security, cookies, and your rights.",
   keywords: [
     "privacy policy",
     "data protection",
-    "Unimovies privacy",
-    "personal data",
-    "cookies",
-    "data security",
+    "unimovies privacy",
+    "cookie policy",
+    "user data security",
     "GDPR",
   ],
   alternates: {
@@ -18,8 +18,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Privacy Policy | Unimovies",
-    description:
-      "Learn how Unimovies collects, uses, and protects your personal data.",
+    description: "Learn how Unimovies protects your personal data and privacy.",
     url: "https://unimovies.vercel.app/privacy",
     type: "website",
   },
@@ -30,5 +29,18 @@ export default function PrivacyLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  const breadcrumbJsonLd = generateBreadcrumbJsonLd([
+    { name: "Home", path: "/" },
+    { name: "Privacy Policy", path: "/privacy" },
+  ]);
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      {children}
+    </>
+  );
 }

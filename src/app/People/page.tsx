@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import People from "@/components/People/People";
-import { generateBreadcrumbJsonLd } from "@/lib/seo";
+import { generateBreadcrumbJsonLd, generateCollectionJsonLd } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Popular Celebrities - Actors, Directors & Filmmakers",
@@ -38,11 +38,21 @@ export default function PeoplePage() {
     { name: "People", path: "/people" },
   ]);
 
+  const collectionJsonLd = generateCollectionJsonLd({
+    name: "Popular Celebrities",
+    description: "Discover popular actors, directors, and filmmakers with biographies, filmographies, and photo galleries.",
+    path: "/people",
+  });
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionJsonLd) }}
       />
       <People />
     </>
