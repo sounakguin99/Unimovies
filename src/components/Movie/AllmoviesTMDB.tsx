@@ -213,7 +213,7 @@ export default function AllmoviesTMDB() {
           <div className={`grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-4 md:gap-6 lg:gap-8 transition-all duration-300 ${isLoading && page === 1 && movies.length > 0 ? "opacity-40 blur-[2px] pointer-events-none" : "opacity-100 blur-0"}`}>
             {movies.map((movie, index) => (
               <div
-                key={movie.id}
+                key={`${movie.id}-${index}`}
                 ref={index === movies.length - 1 ? lastMovieElementRef : null}
                 className="group relative rounded-2xl overflow-hidden shadow-2xl bg-gray-900 border border-white/5 cursor-pointer aspect-[2/3] transition-all duration-500 hover:shadow-[0_0_40px_rgba(59,130,246,0.3)] hover:-translate-y-2"
               >

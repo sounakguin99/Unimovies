@@ -208,8 +208,8 @@ const MovieList = () => {
             <h2 className="text-2xl md:text-4xl font-black tracking-tight">Trending This Week</h2>
           </div>
           <Carousel {...carouselSettings}>
-            {trendingData.map((item: any) => (
-              <MovieItem key={item.id} movie={item} type={item.media_type || "movie"} />
+            {trendingData.map((item: any, index: number) => (
+              <MovieItem key={`${item.id}-${index}`} movie={item} type={item.media_type || "movie"} />
             ))}
           </Carousel>
         </motion.section>
@@ -225,8 +225,8 @@ const MovieList = () => {
             <h2 className="text-2xl md:text-4xl font-black tracking-tight">Now Playing In Theaters</h2>
           </div>
           <Carousel {...carouselSettings}>
-            {nowPlayingData.map((movie: Movie) => (
-              <MovieItem key={movie.id} movie={movie} type="movie" />
+            {nowPlayingData.map((movie: Movie, index: number) => (
+              <MovieItem key={`${movie.id}-${index}`} movie={movie} type="movie" />
             ))}
           </Carousel>
         </motion.section>
@@ -241,8 +241,8 @@ const MovieList = () => {
           <h2 className="text-2xl md:text-4xl font-black tracking-tight">Popular TV Shows</h2>
         </div>
         <Carousel {...carouselSettings}>
-          {popularTvShows.map((movie: TVShow) => (
-            <MovieItem key={movie.id} movie={movie} type="tv" />
+          {popularTvShows.map((movie: TVShow, index: number) => (
+            <MovieItem key={`${movie.id}-${index}`} movie={movie} type="tv" />
           ))}
         </Carousel>
       </motion.section>
@@ -256,8 +256,8 @@ const MovieList = () => {
           <h2 className="text-2xl md:text-4xl font-black tracking-tight">Top-Rated Movies</h2>
         </div>
         <Carousel {...carouselSettings}>
-          {topRatedMovies.map((movie: Movie) => (
-            <MovieItem key={movie.id} movie={movie} type="movie" />
+          {topRatedMovies.map((movie: Movie, index: number) => (
+            <MovieItem key={`${movie.id}-${index}`} movie={movie} type="movie" />
           ))}
         </Carousel>
       </motion.section>
@@ -282,8 +282,8 @@ const MovieList = () => {
           <h2 className="text-2xl md:text-4xl font-black tracking-tight">Popular Movies</h2>
         </div>
         <Carousel {...carouselSettings}>
-          {popularMovies.map((movie: Movie) => (
-            <MovieItem key={movie.id} movie={movie} type="movie" />
+          {popularMovies.map((movie: Movie, index: number) => (
+            <MovieItem key={`${movie.id}-${index}`} movie={movie} type="movie" />
           ))}
         </Carousel>
       </motion.section>
@@ -319,8 +319,8 @@ const MovieList = () => {
           <h2 className="text-2xl md:text-4xl font-black tracking-tight">Popular Anime</h2>
         </div>
         <Carousel {...carouselSettings}>
-          {popularAnimationTvShows.map((movie: TVShow) => (
-            <MovieItem key={movie.id} movie={movie} type="tv" />
+          {popularAnimationTvShows.map((movie: TVShow, index: number) => (
+            <MovieItem key={`${movie.id}-${index}`} movie={movie} type="tv" />
           ))}
         </Carousel>
       </motion.section>
@@ -334,8 +334,8 @@ const MovieList = () => {
           <h2 className="text-2xl md:text-4xl font-black tracking-tight">Upcoming Movies</h2>
         </div>
         <Carousel {...carouselSettings}>
-          {uniqueUpcomingMovies.map((movie: Movie) => (
-            <MovieItem key={movie.id} movie={movie} type="movie" />
+          {uniqueUpcomingMovies.map((movie: Movie, index: number) => (
+            <MovieItem key={`${movie.id}-${index}`} movie={movie} type="movie" />
           ))}
         </Carousel>
       </motion.section>

@@ -37,6 +37,7 @@ export default function Contact() {
   const [errorMessage, setErrorMessage] = useState("");
   const [recaptchaLoaded, setRecaptchaLoaded] = useState(false);
   const honeypotRef = useRef<HTMLInputElement>(null);
+  const recaptchaClientIdRef = useRef<number | null>(null);
 
   const SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || "";
 
@@ -54,18 +55,38 @@ export default function Contact() {
 
   const executeRecaptcha = useCallback((): Promise<string> => {
     return new Promise((resolve, reject) => {
-      if (!(window as any).grecaptcha) {
+      if (!(window as any).grecaptcha || recaptchaClientIdRef.current === null) {
         reject(new Error("reCAPTCHA not loaded"));
         return;
       }
       (window as any).grecaptcha.ready(() => {
         (window as any).grecaptcha
-          .execute(SITE_KEY, { action: "contact_form" })
+          .execute(recaptchaClientIdRef.current, { action: "contact_form" })
           .then((token: string) => resolve(token))
           .catch((err: Error) => reject(err));
       });
     });
-  }, [SITE_KEY]);
+  }, []);
+
+  useEffect(() => {
+    if (recaptchaLoaded && (window as any).grecaptcha && recaptchaClientIdRef.current === null) {
+      (window as any).grecaptcha.ready(() => {
+        const badgeElement = document.getElementById("recaptcha-inline-badge");
+        if (badgeElement && !badgeElement.hasChildNodes()) {
+          try {
+            const clientId = (window as any).grecaptcha.render("recaptcha-inline-badge", {
+              sitekey: SITE_KEY,
+              badge: "inline",
+              size: "invisible",
+            });
+            recaptchaClientIdRef.current = clientId;
+          } catch (e) {
+            console.error("Error rendering reCAPTCHA", e);
+          }
+        }
+      });
+    }
+  }, [recaptchaLoaded, SITE_KEY]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -153,7 +174,7 @@ export default function Contact() {
     <>
       {/* Load reCAPTCHA v3 script */}
       <Script
-        src={`https://www.google.com/recaptcha/api.js?render=${SITE_KEY}`}
+        src={`https://www.google.com/recaptcha/api.js?render=explicit`}
         strategy="lazyOnload"
         onLoad={() => setRecaptchaLoaded(true)}
       />
@@ -407,19 +428,9 @@ export default function Contact() {
                     </motion.div>
                   )}
 
-                  {/* reCAPTCHA badge notice */}
-                  <div className="flex items-center gap-2 text-xs text-gray-500">
-                    <FontAwesomeIcon icon={faShieldAlt} className="text-green-500/60" />
-                    <span>
-                      Protected by Google reCAPTCHA.{" "}
-                      <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-blue-400 transition-colors underline">
-                        Privacy
-                      </a>{" "}
-                      &{" "}
-                      <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-blue-400 transition-colors underline">
-                        Terms
-                      </a>
-                    </span>
+                  {/* reCAPTCHA inline badge container */}
+                  <div className="flex justify-center w-full my-2">
+                    <div id="recaptcha-inline-badge" className="opacity-90 hover:opacity-100 transition-opacity"></div>
                   </div>
 
                   <motion.button

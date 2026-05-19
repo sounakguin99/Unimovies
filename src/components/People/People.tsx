@@ -86,9 +86,9 @@ export default function People() {
 
         <div className="px-4 md:px-8">
           <div className={`grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-4 md:gap-6 lg:gap-8 mt-8 transition-all duration-300 ${isLoading && page === 1 && people.length > 0 ? "opacity-40 blur-[2px] pointer-events-none" : "opacity-100 blur-0"}`}>
-            {people.map((actor) => (
+            {people.map((actor, index) => (
               <div
-                key={actor.id}
+                key={`${actor.id}-${index}`}
                 className="group relative rounded-2xl overflow-hidden shadow-2xl bg-gray-900 border border-white/5 cursor-pointer aspect-[2/3] transition-all duration-500 hover:shadow-[0_0_40px_rgba(59,130,246,0.3)] hover:-translate-y-2"
               >
                 <Link href={`/people/${actor.id}`}>
