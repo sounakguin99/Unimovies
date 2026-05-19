@@ -59,17 +59,17 @@ export default function AwardsClient() {
       let url = "";
 
       if (tab === "oscars") {
-        // Best Picture Winners & Oscar Awards
-        url = `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}&sort_by=popularity.desc&page=${currentPage}&with_keywords=10780|825`;
+        // High vote count and high rating representing Oscar-calibre films
+        url = `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}&sort_by=popularity.desc&vote_count.gte=3000&vote_average.gte=7.8&page=${currentPage}`;
       } else if (tab === "animation") {
         // Highest rated animated features with 1000+ votes
         url = `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}&with_genres=16&sort_by=vote_average.desc&vote_count.gte=1000&page=${currentPage}`;
       } else if (tab === "cannes") {
-        // Cannes film festival keywords
-        url = `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}&sort_by=popularity.desc&page=${currentPage}&with_keywords=9672|233`;
+        // Acclaimed international cinema (French, Italian, Japanese, Korean, Spanish, German)
+        url = `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}&sort_by=popularity.desc&vote_count.gte=500&vote_average.gte=7.5&with_original_language=fr|it|ja|ko|es|de&page=${currentPage}`;
       } else if (tab === "golden_globes") {
-        // Golden Globe winners & awards
-        url = `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}&sort_by=popularity.desc&page=${currentPage}&with_keywords=11802|11801`;
+        // Acclaimed movies with high vote count & rating representing Golden Globe winners/nominees
+        url = `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}&sort_by=popularity.desc&vote_count.gte=1500&vote_average.gte=7.4&page=${currentPage}`;
       }
 
       const response = await fetch(url);
@@ -261,7 +261,7 @@ export default function AwardsClient() {
             </div>
           ))}
 
-          {isLoading && (movies.length === 0 || page > 1) &&
+          {isLoading && movies.length === 0 &&
             [...Array(14)].map((_, i) => (
               <div
                 key={`skeleton-${i}`}
@@ -286,6 +286,16 @@ export default function AwardsClient() {
               </div>
             ))}
         </div>
+
+        {/* Loading Spinner for Infinite Scroll */}
+        {isLoading && page > 1 && (
+          <div className="flex justify-center items-center py-12 mt-4 w-full">
+            <div className="flex items-center space-x-3 bg-gray-900/80 backdrop-blur-md px-6 py-3 rounded-full border border-white/10 shadow-2xl">
+              <div className="w-5 h-5 rounded-full border-2 border-amber-500 border-t-transparent animate-spin"></div>
+              <span className="text-gray-300 text-sm font-semibold tracking-wide">Loading more masterpieces...</span>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

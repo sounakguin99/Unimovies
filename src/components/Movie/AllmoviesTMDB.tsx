@@ -277,7 +277,7 @@ export default function AllmoviesTMDB() {
               </div>
             ))}
 
-            {isLoading && (movies.length === 0 || page > 1) &&
+            {isLoading && movies.length === 0 &&
               [...Array(14)].map((_, i) => (
                 <div
                   key={`skeleton-${i}`}
@@ -313,6 +313,16 @@ export default function AllmoviesTMDB() {
                 </div>
               ))}
           </div>
+
+          {/* Loading Spinner for Infinite Scroll */}
+          {isLoading && page > 1 && (
+            <div className="flex justify-center items-center py-12 mt-4 w-full">
+              <div className="flex items-center space-x-3 bg-gray-900/80 backdrop-blur-md px-6 py-3 rounded-full border border-white/10 shadow-2xl">
+                <div className="w-5 h-5 rounded-full border-2 border-blue-500 border-t-transparent animate-spin"></div>
+                <span className="text-gray-300 text-sm font-semibold tracking-wide">Loading more movies...</span>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

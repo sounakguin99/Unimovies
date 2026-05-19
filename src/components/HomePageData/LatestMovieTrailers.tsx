@@ -6,6 +6,7 @@ const BASE_URL = "https://api.themoviedb.org/3";
 const LatestMovieTrailers = () => {
   const [trailers, setTrailers] = useState<any[]>([]);
   const [currentTrailer, setCurrentTrailer] = useState<any>(null);
+  const [userInteracted, setUserInteracted] = useState(false);
 
   useEffect(() => {
     const fetchNowPlayingMovies = async () => {
@@ -63,36 +64,64 @@ const LatestMovieTrailers = () => {
   }, []);
 
   return (
-    <div className="bg-gray-950">
-      <div className="flex flex-col lg:flex-row justify-center">
-        <div className="w-full lg:w-3/3 p-4">
-          {currentTrailer && (
-            <div className="w-full h-full">
+    <div className="bg-gray-950 rounded-3xl overflow-hidden border border-white/5 p-6 shadow-2xl">
+      <div className="flex flex-col lg:flex-row gap-6">
+        {/* Main Video Player */}
+        <div className="w-full lg:w-2/3">
+          {currentTrailer ? (
+            <div className="w-full aspect-video rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-black">
               <iframe
-                src={`https://www.youtube.com/embed/${currentTrailer.key}?autoplay=1`}
+                src={`https://www.youtube.com/embed/${currentTrailer.key}?autoplay=1&mute=${userInteracted ? "0" : "1"}&enablejsapi=1`}
                 title={currentTrailer.name}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
-                className="w-full h-60 md:h-full lg:h-full object"
+                className="w-full h-full border-0"
               />
             </div>
+          ) : (
+            <div className="w-full aspect-video rounded-2xl bg-gray-900 animate-pulse border border-white/5" />
           )}
         </div>
-        <div className="pt-4 pl-4 overflow-y-auto lg:max-h-screen lg:w-1/3">
-          {trailers.map((trailer) => (
-            <div
-              key={trailer.id}
-              className="mb-4 cursor-pointer"
-              onClick={() => setCurrentTrailer(trailer)}
-            >
-              <div className="w-80 h-44 bg-gray-800 flex items-center justify-center">
-                <img
-                  src={`https://img.youtube.com/vi/${trailer.key}/0.jpg`}
-                  alt={trailer.name}
-                  className="w-full h-44 object-cover"
-                />
+        
+        {/* Playlist / Sidebar */}
+        <div className="w-full lg:w-1/3 flex flex-col gap-4 overflow-y-auto max-h-[450px] pr-2 scrollbar-thin scrollbar-thumb-gray-800 scrollbar-track-transparent">
+          {trailers.map((trailer) => {
+            const isSelected = currentTrailer?.id === trailer.id;
+            return (
+              <div
+                key={trailer.id}
+                className={`flex gap-4 p-3 rounded-2xl cursor-pointer transition-all duration-300 ${
+                  isSelected 
+                    ? "bg-blue-600/10 border border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.15)]" 
+                    : "bg-gray-900/40 border border-white/5 hover:bg-gray-900/80 hover:border-white/10"
+                }`}
+                onClick={() => {
+                  setCurrentTrailer(trailer);
+                  setUserInteracted(true);
+                }}
+              >
+                <div className="relative w-32 aspect-video rounded-xl overflow-hidden flex-shrink-0 bg-gray-800">
+                  <img
+                    src={`https://img.youtube.com/vi/${trailer.key}/0.jpg`}
+                    alt={trailer.name}
+                    className="w-full h-full object-cover"
+                  />
+                  {/* Small Play Overlay Icon */}
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 hover:opacity-100 transition-opacity">
+                    <svg className="w-8 h-8 text-white fill-current" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  </div>
+                </div>
+                <div className="flex flex-col justify-center min-w-0">
+                  <h4 className={`text-sm font-semibold line-clamp-2 leading-snug ${isSelected ? "text-blue-400" : "text-gray-200"}`}>
+                    {trailer.name}
+                  </h4>
+                  <p className="text-xs text-gray-500 mt-1">Official Trailer</p>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>
