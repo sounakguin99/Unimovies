@@ -96,7 +96,8 @@ export default function TVDetails() {
           {tvDetails.backdrop_path ? (
             <Image
               fill
-              className="object-cover object-top filter brightness-[0.65] md:brightness-[0.75] transition-all duration-700"
+              unoptimized
+              className="object-cover object-top filter brightness-[0.9] md:brightness-[0.9] transition-all duration-700"
               src={`https://image.tmdb.org/t/p/original${tvDetails.backdrop_path}`}
               alt={tvDetails.original_name || tvDetails.name || "Backdrop"}
             />
@@ -136,11 +137,10 @@ export default function TVDetails() {
                   {/* Heart / My List Button */}
                   <button
                     onClick={handleMyListClick}
-                    className={`absolute top-4 right-4 h-12 w-12 rounded-full backdrop-blur-md border border-white/20 flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-lg ${
-                      isInList
-                        ? "bg-red-500/20 text-red-500 border-red-500/40"
-                        : "bg-black/50 text-white hover:bg-black/70"
-                    }`}
+                    className={`absolute top-4 right-4 h-12 w-12 rounded-full backdrop-blur-md border border-white/20 flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-lg ${isInList
+                      ? "bg-red-500/20 text-red-500 border-red-500/40"
+                      : "bg-black/50 text-white hover:bg-black/70"
+                      }`}
                     title={isInList ? "Remove from My List" : "Add to My List"}
                   >
                     <FontAwesomeIcon

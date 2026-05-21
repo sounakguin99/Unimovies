@@ -18,14 +18,14 @@ const CustomHeaderWithArrows = ({ next, previous, title, showArrows }: any) => (
       </h2>
     </div>
     {showArrows && (
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-3">
         <button
           onClick={() => previous?.()}
-          className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gray-900/80 backdrop-blur-md border border-white/10 hover:border-blue-500 hover:bg-gray-800 text-white flex items-center justify-center transition-all shadow-lg active:scale-95 group"
+          className="w-10 h-10 rounded-full bg-[#0a0a0a] border border-gray-700 hover:bg-gray-800 flex items-center justify-center text-gray-300 hover:text-white hover:border-gray-500 transition-all shadow-[0_0_15px_rgba(0,0,0,0.5)]"
           aria-label="Previous"
         >
           <svg
-            className="w-5 h-5 text-gray-300 group-hover:text-white transition-colors"
+            className="w-5 h-5 pr-[2px]"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -40,11 +40,11 @@ const CustomHeaderWithArrows = ({ next, previous, title, showArrows }: any) => (
         </button>
         <button
           onClick={() => next?.()}
-          className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gray-900/80 backdrop-blur-md border border-white/10 hover:border-blue-500 hover:bg-gray-800 text-white flex items-center justify-center transition-all shadow-lg active:scale-95 group"
+          className="w-10 h-10 rounded-full bg-[#0a0a0a] border border-gray-700 hover:bg-gray-800 flex items-center justify-center text-gray-300 hover:text-white hover:border-gray-500 transition-all shadow-[0_0_15px_rgba(0,0,0,0.5)]"
           aria-label="Next"
         >
           <svg
-            className="w-5 h-5 text-gray-300 group-hover:text-white transition-colors"
+            className="w-5 h-5 pl-[2px]"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"

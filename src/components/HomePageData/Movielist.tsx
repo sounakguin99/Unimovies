@@ -87,6 +87,26 @@ const MovieItem = React.memo(({ movie, type }: MovieItemProps) => (
   </div>
 ));
 
+const CustomButtonGroup = ({ next, previous, ...rest }: any) => {
+  return (
+    <div className="hidden md:flex absolute top-0 right-4 gap-3 z-10">
+      <button 
+        onClick={() => previous && previous()}
+        className="w-10 h-10 rounded-full bg-[#0a0a0a] border border-gray-700 hover:bg-gray-800 flex items-center justify-center text-gray-300 hover:text-white hover:border-gray-500 transition-all shadow-[0_0_15px_rgba(0,0,0,0.5)]"
+      >
+        <svg className="w-5 h-5 pr-[2px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" /></svg>
+      </button>
+      <button 
+        onClick={() => next && next()}
+        className="w-10 h-10 rounded-full bg-[#0a0a0a] border border-gray-700 hover:bg-gray-800 flex items-center justify-center text-gray-300 hover:text-white hover:border-gray-500 transition-all shadow-[0_0_15px_rgba(0,0,0,0.5)]"
+      >
+        <svg className="w-5 h-5 pl-[2px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" /></svg>
+      </button>
+    </div>
+  );
+};
+
+
 const MovieList = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [loading, setLoading] = useState(true);
@@ -161,14 +181,16 @@ const MovieList = () => {
     swipeable: true,
     draggable: true,
     showDots: false,
-    arrows: isDesktop, // Show arrows only on desktop
+    arrows: false,
+    renderButtonGroupOutside: true,
+    customButtonGroup: <CustomButtonGroup />,
   };
 
   if (loading) {
     return (
       <div className="space-y-16 md:space-y-24">
         {[...Array(3)].map((_, i) => (
-          <div key={i} className="movie-section">
+          <div key={i} className="movie-section relative">
             <div className="flex items-center gap-4 mb-6">
               <div className="w-2 h-8 bg-gray-800 rounded-full"></div>
               <Skeleton width={250} height={35} baseColor="#111" highlightColor="#333" />
@@ -201,7 +223,7 @@ const MovieList = () => {
       {trendingData.length > 0 && (
         <motion.section 
           initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={listVariants}
-          className="movie-section"
+          className="movie-section relative"
         >
           <div className="flex items-center gap-4 mb-6">
             <div className="w-2 h-8 bg-gradient-to-t from-orange-500 to-red-500 rounded-full"></div>
@@ -218,7 +240,7 @@ const MovieList = () => {
       {nowPlayingData.length > 0 && (
         <motion.section 
           initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={listVariants}
-          className="movie-section"
+          className="movie-section relative"
         >
           <div className="flex items-center gap-4 mb-6">
             <div className="w-2 h-8 bg-gradient-to-t from-cyan-400 to-blue-500 rounded-full"></div>
@@ -234,7 +256,7 @@ const MovieList = () => {
 
       <motion.section 
         initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={listVariants}
-        className="movie-section"
+        className="movie-section relative"
       >
         <div className="flex items-center gap-4 mb-6">
           <div className="w-2 h-8 bg-blue-500 rounded-full"></div>
@@ -249,7 +271,7 @@ const MovieList = () => {
 
       <motion.section 
         initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={listVariants}
-        className="movie-section"
+        className="movie-section relative"
       >
         <div className="flex items-center gap-4 mb-6">
           <div className="w-2 h-8 bg-purple-500 rounded-full"></div>
@@ -275,7 +297,7 @@ const MovieList = () => {
 
       <motion.section 
         initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={listVariants}
-        className="movie-section"
+        className="movie-section relative"
       >
         <div className="flex items-center gap-4 mb-6">
           <div className="w-2 h-8 bg-green-500 rounded-full"></div>
@@ -312,7 +334,7 @@ const MovieList = () => {
 
       <motion.section 
         initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={listVariants}
-        className="movie-section"
+        className="movie-section relative"
       >
         <div className="flex items-center gap-4 mb-6">
           <div className="w-2 h-8 bg-yellow-500 rounded-full"></div>
@@ -327,7 +349,7 @@ const MovieList = () => {
 
       <motion.section 
         initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={listVariants}
-        className="movie-section"
+        className="movie-section relative"
       >
         <div className="flex items-center gap-4 mb-6">
           <div className="w-2 h-8 bg-pink-500 rounded-full"></div>

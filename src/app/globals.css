@@ -435,3 +435,16 @@ html,
   width: calc(200% + 3rem);
   animation: scroll 50s linear infinite;
 }
+
+/* Hide scrollbars across browsers */
+.hide-scrollbar::-webkit-scrollbar,
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar,
+.scrollbar-none {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+

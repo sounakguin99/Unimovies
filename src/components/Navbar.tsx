@@ -43,6 +43,7 @@ export default function Navbar() {
     { name: "Movies", path: "/movie" },
     { name: "People", path: "/people" },
     { name: "TV", path: "/tv" },
+    { name: "Trailers", path: "/trailers" },
     { name: "Awards", path: "/awards" },
   ];
 

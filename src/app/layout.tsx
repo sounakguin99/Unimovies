@@ -7,6 +7,7 @@ import OfflineBanner from "../components/OfflineBanner";
 import PWAUpdateNotification from "../components/PWAUpdateNotification";
 import ServiceWorkerRegistrar from "../components/ServiceWorkerRegistrar";
 import WhatsAppButton from "../components/WhatsAppButton";
+import MovieAIChatbot from "../components/MovieAIChatbot";
 import { generateWebsiteJsonLd } from "@/lib/seo";
 
 const geistSans = Geist({
@@ -169,6 +170,7 @@ export default function RootLayout({
           <Navbar />
           {children}
           <WhatsAppButton />
+          <MovieAIChatbot />
           <OfflineBanner />
           <PWAUpdateNotification />
           <ServiceWorkerRegistrar />

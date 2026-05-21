@@ -84,7 +84,7 @@ const LatestMovieTrailers = () => {
         </div>
         
         {/* Playlist / Sidebar */}
-        <div className="w-full lg:w-1/3 flex flex-col gap-4 overflow-y-auto max-h-[450px] pr-2 scrollbar-thin scrollbar-thumb-gray-800 scrollbar-track-transparent">
+        <div className="w-full lg:w-1/3 flex flex-col gap-4 overflow-y-auto max-h-[510px] pr-2 scrollbar-thin scrollbar-thumb-gray-800 scrollbar-track-transparent">
           {trailers.map((trailer) => {
             const isSelected = currentTrailer?.id === trailer.id;
             return (
